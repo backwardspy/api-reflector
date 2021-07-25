@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "api-reflector"
+version = "0.1.0"
+description = "A configurable API mocking service"
+authors = ["Chris Latham <cl@bink.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask = "^2.0.1"
+Flask-Admin = "^1.5.8"
+pydantic = "^1.8.2"
+psycopg2-binary = "^2.9.1"
+Flask-SQLAlchemy = "^2.5.1"
+
+[tool.poetry.dev-dependencies]
+black = "^21.7b0"
+mypy = "^0.910"
+pytest = "^6.2.4"
+ptpython = "^3.0.19"
+alembic = "^1.6.5"
+Werkzeug = "^2.0.1"
+pylint = "^2.9.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.mypy]
+ignore_missing_imports = true
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+]
+
+[tool.pylint.messages_control]
+max-line-length = 120
+disable = [
+    "logging-fstring-interpolation",
+]

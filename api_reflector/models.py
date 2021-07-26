@@ -8,7 +8,7 @@ Contains definitions of SQLAlchemy database models.
 from sqlalchemy import Column, Integer, String, Enum, ARRAY, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, DeclarativeMeta
 
-from api_reflector import db, endpoint, rule, action
+from api_reflector import db, endpoint, rules_engine, action
 
 
 Model = db.Model  # type: DeclarativeMeta
@@ -73,23 +73,23 @@ class Rule(Model):
 
     response_id = Column(Integer, ForeignKey("response.id"), nullable=False)
 
-    operator = Column(Enum(rule.Operator), nullable=False)
+    operator = Column(Enum(rules_engine.Operator), nullable=False)
     arguments = Column(ARRAY(String), nullable=False)
 
     response = relationship("Response", back_populates="rules")
 
     def __str__(self) -> str:
         rule_str = {
-            rule.Operator.EQUAL: "{} == {}",
-            rule.Operator.NOT_EQUAL: "{} != {}",
-            rule.Operator.LESS_THAN: "{} < {}",
-            rule.Operator.LESS_THAN_EQUAL: "{} <= {}",
-            rule.Operator.GREATER_THAN: "{} > {}",
-            rule.Operator.GREATER_THAN_EQUAL: "{} >= {}",
-            rule.Operator.IS_EMPTY: "{} is empty",
-            rule.Operator.IS_NOT_EMPTY: "{} is not empty",
-            rule.Operator.CONTAINS: "{} contains {}",
-            rule.Operator.NOT_CONTAINS: "{} does not contain {}",
+            rules_engine.Operator.EQUAL: "{} == {}",
+            rules_engine.Operator.NOT_EQUAL: "{} != {}",
+            rules_engine.Operator.LESS_THAN: "{} < {}",
+            rules_engine.Operator.LESS_THAN_EQUAL: "{} <= {}",
+            rules_engine.Operator.GREATER_THAN: "{} > {}",
+            rules_engine.Operator.GREATER_THAN_EQUAL: "{} >= {}",
+            rules_engine.Operator.IS_EMPTY: "{} is empty",
+            rules_engine.Operator.IS_NOT_EMPTY: "{} is not empty",
+            rules_engine.Operator.CONTAINS: "{} contains {}",
+            rules_engine.Operator.NOT_CONTAINS: "{} does not contain {}",
         }[self.operator]
         return rule_str.format(*self.arguments)
 

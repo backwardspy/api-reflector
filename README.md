@@ -1,5 +1,7 @@
 # api-reflector
 
+![CI](https://github.com/backwardspy/api-reflector/actions/workflows/main.yml/badge.svg)
+
 A configurable API mocking service.
 
 ## Development

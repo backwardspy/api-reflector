@@ -8,7 +8,7 @@ Contains definitions of SQLAlchemy database models.
 from sqlalchemy import Column, Integer, String, Enum, ARRAY, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, DeclarativeMeta
 
-from api_reflector import db, endpoint, rules_engine, action
+from api_reflector import db, endpoint, rules_engine, actions
 
 
 Model = db.Model  # type: DeclarativeMeta
@@ -105,13 +105,13 @@ class Action(Model):
 
     response_id = Column(Integer, ForeignKey("response.id"), nullable=False)
 
-    action = Column(Enum(action.Action), nullable=False)
+    action = Column(Enum(actions.Action), nullable=False)
     arguments = Column(ARRAY(String), nullable=False)
 
     response = relationship("Response", back_populates="actions")
 
     def __str__(self) -> str:
         action_str = {
-            action.Action.DELAY: "Delay for {} second(s)",
+            actions.Action.DELAY: "Delay for {} second(s)",
         }[self.action]
         return action_str.format(*self.arguments)

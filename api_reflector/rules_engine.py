@@ -3,7 +3,7 @@ Defines the rules engine.
 """
 
 from enum import Enum
-from typing import Callable, Union, NamedTuple, TypeVar
+from typing import Callable, Union, NamedTuple, TypeVar, Any, Mapping
 from jinja2 import Template
 
 
@@ -64,7 +64,8 @@ class TemplatableRequest(NamedTuple):
     A collection of request data that can be used in template context.
     """
 
-    json: dict
+    params: Mapping[str, Any]
+    json: Mapping[str, Any]
 
 
 class ScoringRule(NamedTuple):

@@ -2,13 +2,16 @@
 Defines the project's API endpoints.
 """
 
-from typing import Any
+from typing import Any, Mapping
 
 from flask import Blueprint, request
+from werkzeug.routing import Map, Rule
 
-from api_reflector import models, rules_engine
+from api_reflector import models, rules_engine, actions
+from api_reflector.reporting import get_logger
 
 api = Blueprint("api", __name__)
+log = get_logger("api")
 
 
 def ensure_leading_slash(path: str) -> str:
@@ -22,31 +25,47 @@ def ensure_leading_slash(path: str) -> str:
     return path
 
 
+def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
+    """
+    Uses werkzeug routing to match the given path to an endpoint.
+    Returns the matched endpoint as well as a mapping of URL parameters passed to the endpoint.
+    If no endpoint was matched, raises a NotFound exception.
+    """
+
+    log.debug(f"Matching path `{path}`")
+
+    endpoints: list[models.Endpoint] = models.Endpoint.query.filter(
+        models.Endpoint.method == request.method.upper()
+    ).all()
+
+    urls = Map([Rule(endpoint.path, endpoint=endpoint, methods=[request.method]) for endpoint in endpoints]).bind(
+        "localhost"
+    )
+
+    # we're disabling mypy here because you're supposed to get strings back from `match`, not full endpoint objects.
+    return urls.match(path)  # type: ignore
+
+
+def execute_response_actions(response: models.Response) -> None:
+    """
+    Executes all response actions for the given response.
+    """
+    log.debug(f"Executing actions for response: {response}")
+    for action in response.actions:
+        log.debug(f"Executing action: {action}")
+        actions.action_executors[action.action](*action.arguments)
+
+
 @api.route("/mock/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-def mock(path: str):
+def mock(path: str) -> tuple[Any, int]:
     """
     Mock endpoint. Tries to map the given path to a configured mock.
     """
 
     path = ensure_leading_slash(path)
+    endpoint, params = match_endpoint(path)  # pylint: disable=unpacking-non-sequence
 
-    endpoint: models.Endpoint = models.Endpoint.query.filter(
-        models.Endpoint.method == request.method.upper(), models.Endpoint.path == path.lower()
-    ).one_or_none()
-
-    if not endpoint:
-        # check if we have one for another method or not
-        method_not_allowed = (
-            models.Endpoint.query.with_entities(models.Endpoint.id).filter(models.Endpoint.path == path).one_or_none()
-        )
-        if method_not_allowed:
-            return "endpoint exists under another method", 405
-        return "no such endpoint has been configured", 404
-
-    if request.is_json:
-        json = request.json  # type: Any
-    else:
-        json = {}
+    log.info(f"Matched `{path}` to endpoint: {endpoint}")
 
     response_rules = [
         (
@@ -62,6 +81,14 @@ def mock(path: str):
         for response in endpoint.responses
     ]
 
-    response = rules_engine.find_best_response(rules_engine.TemplatableRequest(json=json), response_rules)
+    if request.is_json:
+        json = request.json  # type: Any
+    else:
+        json = {}
+
+    templateable_request = rules_engine.TemplatableRequest(params=params, json=json)
+    response = rules_engine.find_best_response(templateable_request, response_rules)
+
+    execute_response_actions(response)
 
     return response.content, response.status_code

@@ -43,7 +43,7 @@ def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
     )
 
     # we're disabling mypy here because you're supposed to get strings back from `match`, not full endpoint objects.
-    return urls.match(path)  # type: ignore
+    return urls.match(path, method=request.method)  # type: ignore
 
 
 def execute_response_actions(response: models.Response) -> None:

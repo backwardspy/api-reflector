@@ -6,6 +6,7 @@ from typing import Any, Mapping
 
 from flask import Blueprint, request
 from werkzeug.routing import Map, Rule
+from jinja2 import Template
 
 from api_reflector import models, rules_engine, actions
 from api_reflector.reporting import get_logger
@@ -91,4 +92,10 @@ def mock(path: str) -> tuple[Any, int]:
 
     execute_response_actions(response)
 
-    return response.content, response.status_code
+    content = Template(response.content).render(
+        {
+            "request": templateable_request,
+        }
+    )
+
+    return content, response.status_code

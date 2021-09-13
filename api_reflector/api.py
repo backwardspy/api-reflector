@@ -22,7 +22,7 @@ def create_app() -> Flask:
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLASK_ADMIN_SWATCH="darkly",
     )
-    blueprint = make_azure_blueprint(
+    azure_blueprint = make_azure_blueprint(
         client_id=settings.azure_client_id,
         client_secret=settings.azure_client_secret,
         tenant=settings.azure_tenant,
@@ -32,6 +32,6 @@ def create_app() -> Flask:
     admin.init_app(app)
 
     app.register_blueprint(api)
-    app.register_blueprint(blueprint)
+    app.register_blueprint(azure_blueprint)
 
     return app

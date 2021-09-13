@@ -26,6 +26,9 @@ class LogLevel(str):
 
 class Settings(BaseSettings):
     secret_key: str
+    azure_client_id: str
+    azure_client_secret: str
+    azure_tenant: str
 
     postgres_dsn: PostgresDsn
 

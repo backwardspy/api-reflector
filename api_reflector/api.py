@@ -3,6 +3,7 @@ Provides the top level flask application configuration.
 """
 
 from flask import Flask
+from flask_dance.contrib.azure import make_azure_blueprint
 
 from api_reflector import db
 from api_reflector.views import api
@@ -21,10 +22,16 @@ def create_app() -> Flask:
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLASK_ADMIN_SWATCH="darkly",
     )
+    blueprint = make_azure_blueprint(
+        client_id=settings.azure_client_id,
+        client_secret=settings.azure_client_secret,
+        tenant=settings.azure_tenant,
+    )
 
     db.sqla.init_app(app)
     admin.init_app(app)
 
     app.register_blueprint(api)
+    app.register_blueprint(blueprint)
 
     return app

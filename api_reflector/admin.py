@@ -20,7 +20,6 @@ class RestrictedAdminView(AdminIndexView):
                 return True
             except TokenExpiredError as e:
                 return redirect(url_for("azure.login"))
-
     
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("azure.login"))

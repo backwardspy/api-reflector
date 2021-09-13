@@ -12,13 +12,16 @@ from api_reflector import models, db
 
 
 class RestrictedAdminView(AdminIndexView):
+    """
+    Overrides default Flask-Admin admin view to implement OSS authentication before accessing.
+    """
     def is_accessible(self):
         if azure.authorized:
             try:
                 resp = azure.get("/v1.0/me")
                 assert resp.ok
                 return True
-            except TokenExpiredError as e:
+            except TokenExpiredError:
                 return redirect(url_for("azure.login"))
 
     def inaccessible_callback(self, name, **kwargs):
@@ -29,13 +32,16 @@ admin = Admin(name="API Reflector", template_mode="bootstrap3", index_view=Restr
 
 
 class RestrictedView(ModelView):
+    """
+    Overrides ModelView to implement OSS authentication before accessing.
+    """
     def is_accessible(self):
         if azure.authorized:
             try:
                 resp = azure.get("/v1.0/me")
                 assert resp.ok
                 return True
-            except TokenExpiredError as e:
+            except TokenExpiredError:
                 return redirect(url_for("azure.login"))
 
     def inaccessible_callback(self, name, **kwargs):

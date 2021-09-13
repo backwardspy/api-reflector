@@ -23,6 +23,7 @@ class RestrictedAdminView(AdminIndexView):
                 return True
             except TokenExpiredError:
                 return redirect(url_for("azure.login"))
+        return False
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("azure.login"))
@@ -43,6 +44,7 @@ class RestrictedView(ModelView):
                 return True
             except TokenExpiredError:
                 return redirect(url_for("azure.login"))
+        return False
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("azure.login"))

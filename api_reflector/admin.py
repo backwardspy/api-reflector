@@ -15,6 +15,7 @@ class RestrictedAdminView(AdminIndexView):
     """
     Overrides default Flask-Admin admin view to implement OSS authentication before accessing.
     """
+
     def is_accessible(self):
         if azure.authorized:
             try:
@@ -36,6 +37,7 @@ class RestrictedView(ModelView):
     """
     Overrides ModelView to implement OSS authentication before accessing.
     """
+
     def is_accessible(self):
         if azure.authorized:
             try:

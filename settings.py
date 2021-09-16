@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     secret_key: str
 
-    azure_auth_enabled: bool
+    azure_auth_enabled: bool = False
     azure_client_id: Optional[str]
     azure_client_secret: Optional[str]
     azure_tenant: Optional[str]

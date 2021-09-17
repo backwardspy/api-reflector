@@ -23,6 +23,8 @@ class Endpoint(Model):
 
     id = Column(Integer, primary_key=True)
 
+    name = Column(String, nullable=False)
+
     method = Column(Enum(endpoint.Method), nullable=False)
     path = Column(String, nullable=False)
 
@@ -50,6 +52,8 @@ class Response(Model):
     __tablename__ = "response"
 
     id = Column(Integer, primary_key=True)
+
+    name = Column(String, nullable=False)
 
     endpoint_id = Column(Integer, ForeignKey("endpoint.id"), nullable=False)
 

@@ -59,6 +59,8 @@ jobs:
         run: pip install poetry==${{ matrix.poetry-version }} poetry-dynamic-versioning
       - name: Build Package
         run: poetry build
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.POETRY_PYPI_TOKEN }}
       - name: Publish Package
         run: poetry publish
       - name: Docker meta

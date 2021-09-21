@@ -80,6 +80,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          build_args: |
+          build-args: |
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           tags: ${{ steps.meta.outputs.tags }}

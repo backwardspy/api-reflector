@@ -67,6 +67,11 @@ def mock(path: str) -> tuple[Any, int]:
 
     log.info(f"Matched `{path}` to endpoint: {endpoint}")
 
+    active_responses = [response for response in endpoint.responses if response.is_active]
+
+    if not active_responses:
+        return "No Mock Responses configured or active for this endpoint", 501
+
     response_rules = [
         (
             response,
@@ -78,7 +83,7 @@ def mock(path: str) -> tuple[Any, int]:
                 for rule in response.rules
             ],
         )
-        for response in endpoint.responses
+        for response in active_responses
     ]
 
     if request.is_json:
@@ -88,7 +93,5 @@ def mock(path: str) -> tuple[Any, int]:
 
     templateable_request = rules_engine.TemplatableRequest(params=params, json=json)
     response = rules_engine.find_best_response(templateable_request, response_rules)
-
-    execute_response_actions(response)
 
     return response.content, response.status_code

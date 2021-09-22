@@ -34,10 +34,12 @@ class Endpoint(Model):
         return f"{self.method} {self.path}"
 
 
-response_tag = Table('response_tag', Model.metadata,
-                     Column('response_id', ForeignKey('response.id')),
-                     Column('tag_id', ForeignKey('tag.id'))
-                     )
+response_tag = Table(
+    "response_tag",
+    Model.metadata,
+    Column("response_id", ForeignKey("response.id")),
+    Column("tag_id", ForeignKey("tag.id")),
+)
 
 
 class Response(Model):

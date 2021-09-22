@@ -10,6 +10,7 @@ from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from settings import settings
 
 from api_reflector import models, db
+from api_reflector.slugify import slugify
 
 
 class RestrictedAdminView(AdminIndexView):
@@ -66,22 +67,11 @@ admin.add_views(
     RestrictedView(models.Action, db.session),
 )
 
-unsafe_chars = ['"', '#', '$', '%', '&', '+',
-                ',', '/', ':', ';', '=', '?',
-                '@', '[', '\\', ']', '^', '`',
-                '{', '|', '}', '~', "'"]
-
-
-def slugify(text):
-    non_safe = [c for c in text if c in unsafe_chars]
-    if non_safe:
-        for c in non_safe:
-            text = text.replace(c, '')
-    text = u'-'.join(text.split())
-    return text.lower()
-
 
 class TagView(RestrictedView):
+    """
+    Admin modelview for the Tag model.
+    """
 
     def on_model_change(self, form, model, is_created):
         model.name = slugify(model.name)

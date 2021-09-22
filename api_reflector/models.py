@@ -23,6 +23,8 @@ class Endpoint(Model):
 
     id = Column(Integer, primary_key=True)
 
+    name = Column(String, nullable=False)
+
     method = Column(Enum(endpoint.Method), nullable=False)
     path = Column(String, nullable=False)
 
@@ -51,18 +53,20 @@ class Response(Model):
 
     id = Column(Integer, primary_key=True)
 
+    name = Column(String, nullable=False)
+
     endpoint_id = Column(Integer, ForeignKey("endpoint.id"), nullable=False)
 
     status_code = Column(Integer, nullable=False, default=200)
     content_type = Column(String, nullable=False, default="application/json")
     content = Column(String, nullable=False, default="")
 
+    is_active = Column(Boolean, nullable=False, default=True)
+
     endpoint = relationship("Endpoint", back_populates="responses")
     rules = relationship("Rule", back_populates="response")
     actions = relationship("Action", back_populates="response")
     tags = relationship("Tag", secondary=response_tag)
-
-    is_active = Column(Boolean, nullable=False, default=True)
 
     def __str__(self) -> str:
         max_body_length = 20

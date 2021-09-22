@@ -5,7 +5,7 @@
 Contains definitions of SQLAlchemy database models.
 """
 
-from sqlalchemy import Column, Integer, String, Enum, ARRAY, ForeignKey, UniqueConstraint, Boolean
+from sqlalchemy import Column, Integer, String, Enum, ARRAY, ForeignKey, UniqueConstraint, Boolean, Table
 from sqlalchemy.orm import relationship, DeclarativeMeta
 
 from api_reflector import db, endpoint, rules_engine, actions
@@ -34,6 +34,14 @@ class Endpoint(Model):
         return f"{self.method} {self.path}"
 
 
+response_tag = Table(
+    "response_tag",
+    Model.metadata,
+    Column("response_id", ForeignKey("response.id")),
+    Column("tag_id", ForeignKey("tag.id")),
+)
+
+
 class Response(Model):
     """
     Models a mock API response.
@@ -52,6 +60,7 @@ class Response(Model):
     endpoint = relationship("Endpoint", back_populates="responses")
     rules = relationship("Rule", back_populates="response")
     actions = relationship("Action", back_populates="response")
+    tags = relationship("Tag", secondary=response_tag)
 
     is_active = Column(Boolean, nullable=False, default=True)
 
@@ -117,3 +126,19 @@ class Action(Model):
             actions.Action.DELAY: "Delay for {} second(s)",
         }[self.action]
         return action_str.format(*self.arguments)
+
+
+class Tag(Model):
+    """
+    Models a tag used for tagging responses to group related responses together.
+    """
+
+    __tablename__ = "tag"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False, default="")
+
+    responses = relationship("Response", secondary=response_tag)
+
+    def __str__(self) -> str:
+        return f"{self.name}"

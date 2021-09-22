@@ -10,6 +10,7 @@ from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from settings import settings
 
 from api_reflector import models, db
+from api_reflector.slugify import slugify
 
 
 class RestrictedAdminView(AdminIndexView):
@@ -65,3 +66,15 @@ admin.add_views(
     RestrictedView(models.Rule, db.session),
     RestrictedView(models.Action, db.session),
 )
+
+
+class TagView(RestrictedView):
+    """
+    Admin modelview for the Tag model.
+    """
+
+    def on_model_change(self, form, model, is_created):
+        model.name = slugify(model.name)
+
+
+admin.add_view(TagView(models.Tag, db.session))

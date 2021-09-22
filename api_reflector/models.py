@@ -134,7 +134,7 @@ class Tag(Model):
     __tablename__ = "tag"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, default="")
+    name = Column(String, unique=True, nullable=False, default="")
 
     responses = relationship("Response", secondary=response_tag)
 

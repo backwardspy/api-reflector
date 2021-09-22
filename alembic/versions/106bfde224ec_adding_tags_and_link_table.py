@@ -1,17 +1,18 @@
 """Adding tags and link table
 
 Revision ID: 106bfde224ec
-Revises: ab3e47fb856c
+Revises: 836e9fb3e939
 Create Date: 2021-09-21 14:51:45.361990
 
 """
+import sqlalchemy
 from alembic import op
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
 revision = '106bfde224ec'
-down_revision = 'ab3e47fb856c'
+down_revision = '836e9fb3e939'
 branch_labels = None
 depends_on = None
 
@@ -21,7 +22,8 @@ def upgrade():
     op.create_table('tag',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('response_tag',
     sa.Column('response_id', sa.Integer(), nullable=True),

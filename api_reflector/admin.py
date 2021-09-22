@@ -65,3 +65,26 @@ admin.add_views(
     RestrictedView(models.Rule, db.session),
     RestrictedView(models.Action, db.session),
 )
+
+unsafe_chars = ['"', '#', '$', '%', '&', '+',
+                ',', '/', ':', ';', '=', '?',
+                '@', '[', '\\', ']', '^', '`',
+                '{', '|', '}', '~', "'"]
+
+
+def slugify(text):
+    non_safe = [c for c in text if c in unsafe_chars]
+    if non_safe:
+        for c in non_safe:
+            text = text.replace(c, '')
+    text = u'-'.join(text.split())
+    return text.lower()
+
+
+class TagView(RestrictedView):
+
+    def on_model_change(self, form, model, is_created):
+        model.name = slugify(model.name)
+
+
+admin.add_view(TagView(models.Tag, db.session))

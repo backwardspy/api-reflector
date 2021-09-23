@@ -1,15 +1,15 @@
-"""initial revision
+"""initial migration
 
-Revision ID: ab3e47fb856c
-Revises:
-Create Date: 2021-07-25 21:45:40.461409
+Revision ID: 7b4efa0dd5ea
+Revises: 
+Create Date: 2021-09-23 10:19:07.622146
 
 """
 from alembic import op
 import sqlalchemy as sa
 
 
-revision = "ab3e47fb856c"
+revision = "7b4efa0dd5ea"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -19,18 +19,28 @@ def upgrade():
     op.create_table(
         "endpoint",
         sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(), nullable=False),
         sa.Column("method", sa.Enum("GET", "POST", "PUT", "DELETE", "PATCH", name="method"), nullable=False),
         sa.Column("path", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("method", "path"),
     )
     op.create_table(
+        "tag",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
+    )
+    op.create_table(
         "response",
         sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(), nullable=False),
         sa.Column("endpoint_id", sa.Integer(), nullable=False),
         sa.Column("status_code", sa.Integer(), nullable=False),
         sa.Column("content_type", sa.String(), nullable=False),
         sa.Column("content", sa.String(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
             ["endpoint_id"],
             ["endpoint.id"],
@@ -77,10 +87,25 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id"),
     )
+    op.create_table(
+        "response_tag",
+        sa.Column("response_id", sa.Integer(), nullable=True),
+        sa.Column("tag_id", sa.Integer(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["response_id"],
+            ["response.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["tag_id"],
+            ["tag.id"],
+        ),
+    )
 
 
 def downgrade():
+    op.drop_table("response_tag")
     op.drop_table("response_rule")
     op.drop_table("response_action")
     op.drop_table("response")
+    op.drop_table("tag")
     op.drop_table("endpoint")

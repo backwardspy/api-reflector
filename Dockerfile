@@ -1,9 +1,17 @@
+FROM python:3.9 as build
+
+WORKDIR /src
+ADD . .
+
+RUN pip install poetry==1.2.0a2
+RUN poetry build
+
 FROM python:3.9
-ARG VERSION
-RUN for _ in 1 2 3 4 5; do pip install api-reflector==$VERSION; if [ $? -eq 0 ]; then break; else sleep 60; fi; done
 
 WORKDIR /app
-ADD wsgi.py .
+COPY --from=build /src/dist/api_reflector-0.0.0-py3-none-any.whl .
+COPY --from=build /src/wsgi.py .
+RUN pip install api_reflector-0.0.0-py3-none-any.whl
 
 CMD [ "gunicorn", "--workers=2", "--threads=2", "--error-logfile=-", \
     "--access-logfile=-", "--bind=0.0.0.0:6502", "wsgi" ]

@@ -7,14 +7,19 @@ from flask_dance.contrib.azure import make_azure_blueprint
 
 from api_reflector import db
 from api_reflector.admin import admin
+from api_reflector.reporting import get_logger
 from api_reflector.views import api
 from settings import settings
+
+log = get_logger("api")
 
 
 def create_app() -> Flask:
     """
     Creates a flask application and registers the api blueprint.
     """
+    log.debug("Initializing app")
+
     app = Flask(__name__)
     app.config.update(
         SECRET_KEY=settings.secret_key,
@@ -36,5 +41,10 @@ def create_app() -> Flask:
     admin.init_app(app)
 
     app.register_blueprint(api)
+
+    log.debug("Migrating database")
+    db.run_migrations()
+
+    log.debug("App initialisation complete")
 
     return app

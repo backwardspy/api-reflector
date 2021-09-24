@@ -1,16 +1,15 @@
 """
 Declares the flask-admin instance and sets up the model views.
 """
+from flask import redirect, url_for
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_dance.contrib.azure import azure
-from flask import redirect, url_for
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
-from settings import settings
-
-from api_reflector import models, db
+from api_reflector import db, models
 from api_reflector.slugify import slugify
+from settings import settings
 
 
 class RestrictedAdminView(AdminIndexView):

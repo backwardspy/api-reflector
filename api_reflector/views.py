@@ -5,10 +5,11 @@ Defines the project's API endpoints.
 from typing import Any, Mapping
 
 from flask import Blueprint, request
-from werkzeug.routing import Map, Rule
+from flask_admin.base import render_template
 from jinja2 import Template
+from werkzeug.routing import Map, Rule
 
-from api_reflector import models, rules_engine, actions
+from api_reflector import actions, models, rules_engine
 from api_reflector.reporting import get_logger
 
 api = Blueprint("api", __name__)
@@ -55,6 +56,13 @@ def execute_response_actions(response: models.Response) -> None:
     for action in response.actions:
         log.debug(f"Executing action: {action}")
         actions.action_executors[action.action](*action.arguments)
+
+
+@api.route("/")
+def home() -> tuple[Any, int]:
+    endpoints = models.Endpoint.query.all()
+    tags = models.Tag.query.all()
+    return render_template("home.html", endpoints=endpoints, tags=tags), 200
 
 
 @api.route("/mock/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])

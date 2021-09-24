@@ -1,11 +1,10 @@
 import logging
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from alembic import context
+from sqlalchemy import engine_from_config, pool
 
-from api_reflector import db
+from alembic import context
 from api_reflector import models  # noqa
+from api_reflector import db
 from api_reflector.reporting import LOG_FORMAT
 from settings import settings
 

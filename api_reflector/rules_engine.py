@@ -3,7 +3,8 @@ Defines the rules engine.
 """
 
 from enum import Enum
-from typing import Callable, Union, NamedTuple, TypeVar, Any, Mapping
+from typing import Any, Callable, Mapping, NamedTuple, TypeVar, Union
+
 from jinja2 import Template
 
 

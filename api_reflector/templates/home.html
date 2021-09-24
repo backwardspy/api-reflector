@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>API Reflector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('api.home') }}">API Reflector</a>
+            <a class="btn btn-primary" href="{{ url_for('admin.index') }}">Go to Admin</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h2>Tags</h2>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    {% for tag in tags %}
+                    <div class="col text-center">
+                        <button id="{{ tag }}" onclick="toggle_tag(this)" class="btn btn-secondary">{{ tag }}</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <h2>Endpoints & Responses</h2>
+
+        {% for endpoint in endpoints %}
+        <div class="endpoint card mb-3">
+            <div class="card-body">
+                <div class="card-title">
+                    <div class="row">
+                        <div class="col-auto me-auto">
+                            <h3>{{ endpoint.name }}</h3>
+                        </div>
+                        <div class="col-auto">
+                            <a href="{{ url_for('endpoint.edit_view', id=endpoint.id) }}" class="btn btn-primary">
+                                View in admin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-subtitle">
+                    <pre>{{ endpoint.method }} {{ endpoint.path }}</pre>
+                </div>
+                <ul>
+                    {% for response in endpoint.responses %}
+                    <li id="endpoint-{{ endpoint.id }}-response-{{ response.id }}" class="response-list-item">
+                        <div class="row">
+                            <div class="col-auto me-auto">
+                                <a href="{{ url_for('response.edit_view', id=response.id) }}">
+                                    {{ response.name}} ({{ response }})
+                                </a>
+                            </div>
+                            <div class="col-auto">
+                                {% for tag in response.tags %}
+                                <span id="{{ tag }}" class="tag badge bg-secondary">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="{{ url_for('static', filename='filter.js') }}"></script>
+</body>
+
+</html>

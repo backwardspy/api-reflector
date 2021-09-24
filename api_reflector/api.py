@@ -7,9 +7,9 @@ from flask_dance.contrib.azure import make_azure_blueprint
 
 from api_reflector import db
 from api_reflector.admin import admin
+from api_reflector.reporting import get_logger
 from api_reflector.views import api
 from settings import settings
-from api_reflector.reporting import get_logger
 
 log = get_logger("api")
 

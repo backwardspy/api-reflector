@@ -60,6 +60,9 @@ def execute_response_actions(response: models.Response) -> None:
 
 @api.route("/")
 def home() -> tuple[Any, int]:
+    """
+    Renders the home page.
+    """
     endpoints = models.Endpoint.query.all()
     tags = models.Tag.query.all()
     return render_template("home.html", endpoints=endpoints, tags=tags), 200

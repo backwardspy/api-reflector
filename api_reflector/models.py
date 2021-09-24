@@ -5,8 +5,7 @@
 Contains definitions of SQLAlchemy database models.
 """
 
-from sqlalchemy import (ARRAY, Boolean, Column, Enum, ForeignKey, Integer,
-                        String, Table, UniqueConstraint)
+from sqlalchemy import ARRAY, Boolean, Column, Enum, ForeignKey, Integer, String, Table, UniqueConstraint
 from sqlalchemy.orm import DeclarativeMeta, relationship
 
 from api_reflector import actions, db, endpoint, rules_engine
@@ -74,10 +73,10 @@ class Response(Model):
             body = self.content[:max_body_length] + "..."
         else:
             body = self.content
+
         if body:
             return f"{self.status_code} {body}"
-        else:
-            return str(self.status_code)
+        return str(self.status_code)
 
 
 class Rule(Model):

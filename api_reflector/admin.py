@@ -6,9 +6,9 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_dance.contrib.azure import azure
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
+from slugify import slugify
 
 from api_reflector import db, models
-from api_reflector.slugify import slugify
 from settings import settings
 
 

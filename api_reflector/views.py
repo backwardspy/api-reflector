@@ -2,14 +2,16 @@
 Defines the project's API endpoints.
 """
 
+from functools import wraps
 from typing import Any, Mapping
 
-from flask import Blueprint, request
+from flask import Blueprint, redirect, request, url_for
 from flask_admin.base import render_template
 from jinja2 import Template
 from werkzeug.routing import Map, Rule
 
 from api_reflector import actions, models, rules_engine
+from api_reflector.auth import is_authorized
 from api_reflector.reporting import get_logger
 
 api = Blueprint("api", __name__)
@@ -58,7 +60,23 @@ def execute_response_actions(response: models.Response) -> None:
         actions.action_executors[action.action](*action.arguments)
 
 
+def requires_auth(view_function):
+    """
+    Flask view function decorator that ensures that the user is authenticated.
+    The user is redirected to the Azure login flow if they are not already authenticated.
+    """
+
+    @wraps(view_function)
+    def decorator(*args, **kwargs):
+        if not is_authorized():
+            return redirect(url_for("azure.login"))
+        return view_function(*args, **kwargs)
+
+    return decorator
+
+
 @api.route("/")
+@requires_auth
 def home() -> tuple[Any, int]:
     """
     Renders the home page.

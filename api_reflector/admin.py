@@ -5,12 +5,9 @@ from flask import redirect, url_for
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
-from flask_dance.contrib.azure import azure
-from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from slugify import slugify
 
-from api_reflector import db, models
-from settings import settings
+from api_reflector import auth, db, models
 
 
 class RestrictedAdminView(AdminIndexView):
@@ -22,17 +19,7 @@ class RestrictedAdminView(AdminIndexView):
         return False
 
     def is_accessible(self):
-        if not settings.azure_auth_enabled:
-            return True
-
-        if azure.authorized:
-            try:
-                resp = azure.get("/v1.0/me")
-                resp.raise_for_status()
-                return True
-            except TokenExpiredError:
-                return redirect(url_for("azure.login"))
-        return False
+        return auth.is_authorized()
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("azure.login"))
@@ -47,17 +34,7 @@ class RestrictedView(ModelView):
     """
 
     def is_accessible(self):
-        if not settings.azure_auth_enabled:
-            return True
-
-        if azure.authorized:
-            try:
-                resp = azure.get("/v1.0/me")
-                resp.raise_for_status()
-                return True
-            except TokenExpiredError:
-                return redirect(url_for("azure.login"))
-        return False
+        return auth.is_authorized()
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("azure.login"))

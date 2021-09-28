@@ -3,8 +3,8 @@ Declares the flask-admin instance and sets up the model views.
 """
 from flask import redirect, url_for
 from flask_admin import Admin, AdminIndexView
-from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
 from flask_dance.contrib.azure import azure
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from slugify import slugify
@@ -75,6 +75,10 @@ class TagView(RestrictedView):
 
 
 class EndpointView(RestrictedView):
+    """
+    Admin modelview for the Endpoint model.
+    """
+
     form_excluded_columns = ("responses",)
     form_widget_args = {"responses": {"disabled": True}}
     inline_models = (models.Response,)

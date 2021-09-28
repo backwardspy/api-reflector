@@ -16,6 +16,7 @@ easier project configuration.
 ```shell
 $ poetry install
 $ poetry shell
+$ api-reflector-migrate
 $ flask run
 ```
 
@@ -29,17 +30,13 @@ example. If you use the example dotenv file, make sure you update `secret_key`.
 Azure authorization can be disabled by setting the env variable azure_auth_enabled to 0,
 or re-enabled, by setting azure_auth_enabled to 1. 
 If Azure authentication is enabled, three extra variables need to be provided in the env file:
+
 ```
 azure_client_id
 azure_client_secret
 azure_tenant
 ```
-Otherwise, the service will not run.
 
 ## Local Testing
 
-If Azure auth is enabled, it is important to either export, or set
-```
-OAUTHLIB_INSECURE_TRANSPORT=1
-```
-in the .env file.
+If Azure auth is enabled, it is important to either export, or set `OAUTHLIB_INSECURE_TRANSPORT=1` in the .env file.

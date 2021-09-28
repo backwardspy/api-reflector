@@ -4,6 +4,7 @@ Declares the flask-admin instance and sets up the model views.
 from flask import redirect, url_for
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
 from flask_dance.contrib.azure import azure
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from slugify import slugify
@@ -16,6 +17,9 @@ class RestrictedAdminView(AdminIndexView):
     """
     Overrides default Flask-Admin admin view to implement OSS authentication before accessing.
     """
+
+    def is_visible(self):
+        return False
 
     def is_accessible(self):
         if not settings.azure_auth_enabled:
@@ -59,21 +63,33 @@ class RestrictedView(ModelView):
         return redirect(url_for("azure.login"))
 
 
-admin.add_views(
-    RestrictedView(models.Endpoint, db.session),
-    RestrictedView(models.Response, db.session),
-    RestrictedView(models.Rule, db.session),
-    RestrictedView(models.Action, db.session),
-)
-
-
 class TagView(RestrictedView):
     """
     Admin modelview for the Tag model.
     """
 
-    def on_model_change(self, form, model, is_created):
-        model.name = slugify(model.name)
+    def validate_form(self, form):
+        if form.name.data:
+            form.name.data = slugify(form.name.data)
+        return super().validate_form(form)
 
 
-admin.add_view(TagView(models.Tag, db.session))
+class EndpointView(RestrictedView):
+    """
+    Admin modelview for the Endpoint model.
+    """
+
+    form_excluded_columns = ("responses",)
+    form_widget_args = {"responses": {"disabled": True}}
+    inline_models = (models.Response,)
+
+
+admin.add_link(MenuLink(name="Home", url="/"))
+
+admin.add_views(
+    TagView(models.Tag, db.session),
+    EndpointView(models.Endpoint, db.session),
+    RestrictedView(models.Response, db.session),
+    RestrictedView(models.Rule, db.session),
+    RestrictedView(models.Action, db.session),
+)

@@ -9,6 +9,7 @@ from api_reflector import db
 from api_reflector.admin import admin
 from api_reflector.reporting import get_logger
 from api_reflector.views import api
+from api_reflector.migrations import run_migrations
 from settings import settings
 
 log = get_logger("api")
@@ -43,7 +44,7 @@ def create_app() -> Flask:
     app.register_blueprint(api)
 
     log.debug("Migrating database")
-    db.run_migrations()
+    run_migrations.main()
 
     log.debug("App initialisation complete")
 

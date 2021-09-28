@@ -69,7 +69,7 @@ class TagView(RestrictedView):
     """
 
     def validate_form(self, form):
-        if form.name.data:
+        if hasattr(form, "name") and form.name.data:
             form.name.data = slugify(form.name.data)
         return super().validate_form(form)
 

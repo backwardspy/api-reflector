@@ -35,8 +35,17 @@ azure_client_id
 azure_client_secret
 azure_tenant
 ```
+### Required Kubernetes Annotations for Ingress
 
-Additionally, the `external_url` setting should be used to control the redirect back from the auth flow.
+If you use an external service for proxying traffic into your Kubernetes clusters such as Azure Front Door or Cloudflare, you'll need to pass the following example annotation:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/upstream-vhost: reflector.example.com # <-- this one right here.
+```
 
 ## Local Testing
 

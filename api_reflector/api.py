@@ -34,7 +34,7 @@ def create_app() -> Flask:
             client_id=settings.azure_client_id,
             client_secret=settings.azure_client_secret,
             tenant=settings.azure_tenant,
-            redirect_url=settings.external_url,
+            redirect_url="/",
         )
         app.register_blueprint(azure_blueprint)
 

@@ -26,4 +26,9 @@ def is_authorized():
     """
     Returns true if the current user is authorized to access the system.
     """
-    return settings.azure_auth_enabled and azure.authorized and validate_token()
+    if not settings.azure_auth_enabled:
+        # when auth is disabled, everyone is authorized.
+        return True
+
+    # otherwise we must have a token and that token must not have expired.
+    return azure.authorized and validate_token()

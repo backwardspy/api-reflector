@@ -27,9 +27,8 @@ example. If you use the example dotenv file, make sure you update `secret_key`.
 
 ## Azure auth
 
-Azure authorization can be disabled by setting the env variable azure_auth_enabled to 0,
-or re-enabled, by setting azure_auth_enabled to 1. 
-If Azure authentication is enabled, three extra variables need to be provided in the env file:
+Azure SSO can be enabled by setting azure_auth_enabled to `true` in your environment.
+If Azure SSO is enabled, three extra environment variables need to be provided:
 
 ```
 azure_client_id
@@ -41,4 +40,5 @@ Additionally, the `external_url` setting should be used to control the redirect 
 
 ## Local Testing
 
-If Azure auth is enabled, it is important to either export, or set `OAUTHLIB_INSECURE_TRANSPORT=1` in the .env file.
+By default, insecure redirect URLS will be rejected.
+If you want to test locally, set OAUTHLIB_INSECURE_TRANSPORT=true in your environment.

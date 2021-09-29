@@ -37,6 +37,8 @@ azure_client_secret
 azure_tenant
 ```
 
+Additionally, the `external_url` setting should be used to control the redirect back from the auth flow.
+
 ## Local Testing
 
 If Azure auth is enabled, it is important to either export, or set `OAUTHLIB_INSECURE_TRANSPORT=1` in the .env file.

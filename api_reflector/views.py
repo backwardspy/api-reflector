@@ -75,6 +75,14 @@ def requires_auth(view_function):
     return decorator
 
 
+@api.route("/healthz")
+def healthz() -> tuple[Any, int]:
+    """
+    Returns a 200 OK response.
+    """
+    return "OK", 200
+
+
 @api.route("/")
 @requires_auth
 def home() -> tuple[Any, int]:

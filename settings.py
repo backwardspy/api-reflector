@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     azure_client_secret: Optional[str]
     azure_tenant: Optional[str]
 
+    external_url: str = "http://localhost:6502"
+
     postgres_dsn: PostgresDsn
 
     log_json: bool = True

@@ -26,7 +26,7 @@ def create_app() -> Flask:
     app.wsgi_app = ProxyFix(  # type: ignore
         app.wsgi_app,
         x_proto=int(settings.use_x_forwarded_proto),
-        x_host=int(settings.use_x_forwarded_proto),
+        x_host=int(settings.use_x_forwarded_host),
     )
 
     app.config.update(

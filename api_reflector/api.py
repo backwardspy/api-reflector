@@ -4,6 +4,7 @@ Provides the top level flask application configuration.
 
 from flask import Flask
 from flask_dance.contrib.azure import make_azure_blueprint
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from api_reflector import db
 from api_reflector.admin import admin
@@ -22,6 +23,8 @@ def create_app() -> Flask:
     log.debug("Initializing app")
 
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
     app.config.update(
         SECRET_KEY=settings.secret_key,
         SQLALCHEMY_DATABASE_URI=settings.postgres_dsn,

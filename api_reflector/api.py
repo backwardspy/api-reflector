@@ -23,7 +23,11 @@ def create_app() -> Flask:
     log.debug("Initializing app")
 
     app = Flask(__name__)
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # type: ignore
+    app.wsgi_app = ProxyFix(  # type: ignore
+        app.wsgi_app,
+        x_proto=int(settings.use_x_forwarded_proto),
+        x_host=int(settings.use_x_forwarded_proto),
+    )
 
     app.config.update(
         SECRET_KEY=settings.secret_key,

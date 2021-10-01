@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     azure_client_id: Optional[str]
     azure_client_secret: Optional[str]
     azure_tenant: Optional[str]
+    use_x_forwarded_host: bool = False
+    use_x_forwarded_proto: bool = False
 
     postgres_dsn: PostgresDsn
 

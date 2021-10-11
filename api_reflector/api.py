@@ -20,7 +20,7 @@ def create_app() -> Flask:
     """
     Creates a flask application and registers the api blueprint.
     """
-    log.debug("Initializing app")
+    log.debug("Initializing app.")
 
     app = Flask(__name__)
     app.wsgi_app = ProxyFix(  # type: ignore
@@ -50,9 +50,9 @@ def create_app() -> Flask:
 
     app.register_blueprint(api)
 
-    log.debug("Migrating database")
+    log.debug("Migrating database.")
     run_migrations.main()
 
-    log.debug("App initialisation complete")
+    log.debug("App initialisation complete.")
 
     return app

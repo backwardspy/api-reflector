@@ -5,15 +5,22 @@ from cachetools import TTLCache, cached
 from flask_dance.contrib.azure import azure
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
+from api_reflector.reporting import get_logger
 from settings import settings
 
 
-@cached(cache=TTLCache(maxsize=1, ttl=60))
-def validate_token() -> bool:
+log = get_logger(__name__)
+
+
+@cached(cache=TTLCache(maxsize=256, ttl=600))
+def validate_token(_token: str) -> bool:
     """
     Tests if the current token is still valid.
     Cached to avoid spamming /v1.0/me too often.
+
+    The `_token` param is only used to distinguish cache entries.
     """
+    log.debug("Validating azure auth token.")
     try:
         resp = azure.get("/v1.0/me")
         resp.raise_for_status()
@@ -31,4 +38,4 @@ def is_authorized():
         return True
 
     # otherwise we must have a token and that token must not have expired.
-    return azure.authorized and validate_token()
+    return azure.authorized and validate_token(azure.access_token)

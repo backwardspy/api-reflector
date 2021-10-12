@@ -4,6 +4,7 @@ metadata:
   labels:
     app: api-reflector
   name: api-reflector
+  namespace: default
 spec:
   selector:
     matchLabels:

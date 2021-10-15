@@ -66,8 +66,8 @@ def home() -> tuple[Any, int]:
     """
     Renders the home page.
     """
-    endpoints = models.Endpoint.query.all()
-    tags = models.Tag.query.all()
+    endpoints = models.Endpoint.query.order_by(models.Endpoint.name).all()
+    tags = models.Tag.query.order_by(models.Tag.name).all()
     return render_template("home.html", endpoints=endpoints, tags=tags), 200
 
 

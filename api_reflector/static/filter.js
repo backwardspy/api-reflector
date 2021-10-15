@@ -1,4 +1,7 @@
-active_tags = [];
+const INACTIVE_TAG_CLASS = 'btn-outline-primary';
+const ACTIVE_TAG_CLASS = 'btn-primary';
+
+let active_tags = [];
 
 function find_ancestor(el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls));
@@ -6,17 +9,15 @@ function find_ancestor(el, cls) {
 }
 
 function toggle_tag(button) {
-    if (button.classList.contains('btn-secondary')) {
-        // button is currently inactive, so activate it
-        button.classList.remove('btn-secondary');
-        button.classList.add('btn-primary');
+    if (button.classList.contains(INACTIVE_TAG_CLASS)) {
+        button.classList.remove(INACTIVE_TAG_CLASS);
+        button.classList.add(ACTIVE_TAG_CLASS);
 
         // add the tag to the active_tags array
         active_tags.push(button.id);
     } else {
-        // button is currently active, so deactivate it
-        button.classList.remove('btn-primary');
-        button.classList.add('btn-secondary');
+        button.classList.remove(ACTIVE_TAG_CLASS);
+        button.classList.add(INACTIVE_TAG_CLASS);
 
         // remove the tag from the active_tags array
         active_tags.splice(active_tags.indexOf(button.id), 1);
@@ -53,16 +54,17 @@ function update_list_items() {
         var response_item = list_items[i];
 
         // get the list item's tags
-        var tags = response_item.getElementsByClassName('tag');
+        var tag_elements = response_item.getElementsByClassName('tag');
+        var tags = Array.prototype.map.call(tag_elements, tag => tag.id);
 
         // get the parent card div
         var parent_card = find_ancestor(response_item, 'card');
 
-        // check if any of the list item's tags are in active_tags
-        var show = false;
-        for (var j = 0; j < tags.length; j++) {
-            if (active_tags.includes(tags[j].id)) {
-                show = true;
+        // check if all of the active tags are in the list item's tags
+        var show = true;
+        for (var j = 0; j < active_tags.length; j++) {
+            if (!tags.includes(active_tags[j])) {
+                show = false;
                 break;
             }
         }

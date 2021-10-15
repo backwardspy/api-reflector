@@ -13,7 +13,7 @@ from api_reflector.reporting import get_logger
 from api_reflector.views import api
 from settings import settings
 
-log = get_logger("api")
+log = get_logger(__name__)
 
 
 def create_app() -> Flask:

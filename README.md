@@ -35,7 +35,13 @@ azure_client_id
 azure_client_secret
 azure_tenant
 ```
-### Required Kubernetes Annotations for Ingress
+
+### Local Testing
+
+By default, insecure redirect URLS will be rejected.
+If you want to test locally, set OAUTHLIB_INSECURE_TRANSPORT=true in your environment.
+
+## Required Kubernetes Annotations for Ingress
 
 If you use an external service for proxying traffic into your Kubernetes clusters such as Azure Front Door or Cloudflare, you'll need to pass the following example annotation:
 
@@ -46,8 +52,3 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/upstream-vhost: reflector.example.com # <-- this one right here.
 ```
-
-## Local Testing
-
-By default, insecure redirect URLS will be rejected.
-If you want to test locally, set OAUTHLIB_INSECURE_TRANSPORT=true in your environment.

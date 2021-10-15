@@ -5,12 +5,26 @@
 Contains definitions of SQLAlchemy database models.
 """
 
-from sqlalchemy import ARRAY, Boolean, Column, Enum, ForeignKey, Integer, String, Table, UniqueConstraint
+from sqlalchemy import (
+    ARRAY,
+    Boolean,
+    Column,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeMeta, relationship
 
 from api_reflector import actions, db, endpoint, rules_engine
+from api_reflector.reporting import get_logger
 
 Model = db.Model  # type: DeclarativeMeta
+
+
+log = get_logger(__name__)
 
 
 class Endpoint(Model):
@@ -32,7 +46,7 @@ class Endpoint(Model):
     responses = relationship("Response", back_populates="endpoint")
 
     def __str__(self) -> str:
-        return f"{self.method} {self.path}"
+        return f"{self.name} ({self.method} {self.path})"
 
 
 response_tag = Table(
@@ -77,6 +91,15 @@ class Response(Model):
         if body:
             return f"{self.status_code} {body}"
         return str(self.status_code)
+
+    def execute_actions(self) -> None:
+        """
+        Executes all response actions for the given response.
+        """
+        log.debug(f"Executing actions for response: {self}")
+        for action in self.actions:
+            log.debug(f"Executing action: {action}")
+            actions.action_executors[action.action](*action.arguments)
 
 
 class Rule(Model):

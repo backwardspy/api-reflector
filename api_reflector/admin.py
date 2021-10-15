@@ -10,6 +10,18 @@ from slugify import slugify
 from api_reflector import auth, db, models
 
 
+def admin_view(model: db.Model):
+    """
+    Registers a model with the admin.
+    """
+
+    def decorator(cls):
+        admin.add_view(cls(model, db.session))
+        return cls
+
+    return decorator
+
+
 class RestrictedAdminView(AdminIndexView):
     """
     Overrides default Flask-Admin admin view to implement OSS authentication before accessing.
@@ -40,10 +52,13 @@ class RestrictedView(ModelView):
         return redirect(url_for("azure.login"))
 
 
+@admin_view(models.Tag)
 class TagView(RestrictedView):
     """
     Admin modelview for the Tag model.
     """
+
+    form_excluded_columns = ("responses",)
 
     def validate_form(self, form):
         if hasattr(form, "name") and form.name.data:
@@ -51,6 +66,7 @@ class TagView(RestrictedView):
         return super().validate_form(form)
 
 
+@admin_view(models.Endpoint)
 class EndpointView(RestrictedView):
     """
     Admin modelview for the Endpoint model.
@@ -58,15 +74,16 @@ class EndpointView(RestrictedView):
 
     form_excluded_columns = ("responses",)
     form_widget_args = {"responses": {"disabled": True}}
-    inline_models = (models.Response,)
+
+
+@admin_view(models.Response)
+class ResponseView(RestrictedView):
+    """
+    Admin modelview for the Response model.
+    """
+
+    column_exclude_list = ("content_type",)
+    inline_models = (models.Rule, models.Action)
 
 
 admin.add_link(MenuLink(name="Home", url="/"))
-
-admin.add_views(
-    TagView(models.Tag, db.session),
-    EndpointView(models.Endpoint, db.session),
-    RestrictedView(models.Response, db.session),
-    RestrictedView(models.Rule, db.session),
-    RestrictedView(models.Action, db.session),
-)

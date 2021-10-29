@@ -4,8 +4,6 @@
 """
 Contains definitions of SQLAlchemy database models.
 """
-import json
-
 from typing import Any, Mapping
 
 from sqlalchemy import (
@@ -95,19 +93,15 @@ class Response(Model):
             return f"{self.status_code} {body}"
         return str(self.status_code)
 
-    def execute_actions(self, req_json: Mapping[str, Any], content: str) -> list:
+    def execute_actions(self, req_json: Mapping[str, Any], content: str):
         """
         Executes all response actions for the given response.
         """
         log.debug(f"Executing actions for response: {self}")
-        result = []
+
         for action in self.actions:
             log.debug(f"Executing action: {action}")
-            result.append(
-                actions.action_executors[action.action](*action.arguments, request=req_json, response=content)
-            )
-
-        return result
+            actions.action_executors[action.action](*action.arguments, request=req_json, response=content)
 
 
 class Rule(Model):

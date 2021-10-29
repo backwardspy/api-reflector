@@ -35,6 +35,7 @@ Werkzeug = "^2.0.1"
 pylint = "^2.9.5"
 types-python-slugify = "^5.0.0"
 types-cachetools = "^4.2.0"
+types-requests = "^2.25.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
@@ -59,4 +60,7 @@ plugins = [
 max-line-length = 120
 disable = [
     "logging-fstring-interpolation",
+    "missing-class-docstring",
+    "missing-module-docstring",
+    "missing-function-docstring",
 ]

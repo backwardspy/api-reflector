@@ -3,8 +3,9 @@ Contains types and methods related to rules engine actions.
 """
 import json
 import time
-import requests
 from enum import Enum
+
+import requests
 
 from api_reflector.reporting import get_logger
 
@@ -23,18 +24,17 @@ class Action(Enum):
         return self.value
 
 
-def delay(*args, **kwargs) -> None:
+def delay(*args, **_kwargs) -> None:
     time.sleep(float(args[0]))
 
 
-def process_callback(*args, **kwargs) -> requests.Response:
+def process_callback(*args, **kwargs):
     """
     send webhook or something to other app to process callback
     Params: args are currently a list of strings which for this callback process would be better as key values.
     Convert the args into a dict.
     """
-    resp = {}
-    data_dict = {}
+    data_dict: dict[str, str] = {}
 
     for arg in args:
         split_vals = arg.split("=")
@@ -44,11 +44,9 @@ def process_callback(*args, **kwargs) -> requests.Response:
     data_dict.update(kwargs)
 
     try:
-        resp = requests.request("POST", url=data_dict["url"], data=json.dumps(data_dict))
-    except Exception as ex:
+        requests.request("POST", url=data_dict["url"], data=json.dumps(data_dict))
+    except requests.exceptions.RequestException as ex:
         log.warning(f"Check all Action arguments have been provided and that the callback service is running`{ex}`")
-
-    return resp
 
 
 action_executors = {

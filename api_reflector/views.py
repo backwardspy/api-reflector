@@ -114,6 +114,6 @@ def mock(path: str) -> tuple[Any, int]:
         }
     )
 
-    result = response.execute_actions(req_json, content)
+    response.execute_actions(req_json, content)
 
     return content, response.status_code

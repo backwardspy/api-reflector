@@ -4,6 +4,9 @@
 """
 Contains definitions of SQLAlchemy database models.
 """
+import json
+
+from typing import Any, Mapping
 
 from sqlalchemy import (
     ARRAY,
@@ -92,14 +95,19 @@ class Response(Model):
             return f"{self.status_code} {body}"
         return str(self.status_code)
 
-    def execute_actions(self) -> None:
+    def execute_actions(self, req_json: Mapping[str, Any], content: str) -> list:
         """
         Executes all response actions for the given response.
         """
         log.debug(f"Executing actions for response: {self}")
+        result = []
         for action in self.actions:
             log.debug(f"Executing action: {action}")
-            actions.action_executors[action.action](*action.arguments)
+            result.append(
+                actions.action_executors[action.action](*action.arguments, request=req_json, response=content)
+            )
+
+        return result
 
 
 class Rule(Model):
@@ -153,6 +161,7 @@ class Action(Model):
     def __str__(self) -> str:
         action_str = {
             actions.Action.DELAY: "Delay for {} second(s)",
+            actions.Action.CALLBACK: "Do the callback",
         }[self.action]
         return action_str.format(*self.arguments)
 

@@ -1,7 +1,6 @@
 """
 Defines the project's API endpoints.
 """
-
 from typing import Any, Mapping
 
 import psycopg2
@@ -102,19 +101,19 @@ def mock(path: str) -> tuple[Any, int]:
     ]
 
     if request.is_json:
-        json = request.json  # type: Any
+        req_json = request.json  # type: Any
     else:
-        json = {}
+        req_json = {}
 
-    templateable_request = rules_engine.TemplatableRequest(params=params, json=json)
+    templateable_request = rules_engine.TemplatableRequest(params=params, json=req_json)
     response = rules_engine.find_best_response(templateable_request, response_rules)
-
-    response.execute_actions()
 
     content = Template(response.content).render(
         {
             "request": templateable_request,
         }
     )
+
+    result = response.execute_actions(req_json, content)
 
     return content, response.status_code

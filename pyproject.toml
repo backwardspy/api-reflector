@@ -60,7 +60,4 @@ plugins = [
 max-line-length = 120
 disable = [
     "logging-fstring-interpolation",
-    "missing-class-docstring",
-    "missing-module-docstring",
-    "missing-function-docstring",
 ]

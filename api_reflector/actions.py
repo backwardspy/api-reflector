@@ -25,14 +25,19 @@ class Action(Enum):
 
 
 def delay(*args, **_kwargs) -> None:
+    """
+    Sleep for an amount of time.
+    Takes a single positional argument; the number of seconds to sleep for.
+    """
     time.sleep(float(args[0]))
 
 
 def process_callback(*args, **kwargs):
     """
-    send webhook or something to other app to process callback
-    Params: args are currently a list of strings which for this callback process would be better as key values.
-    Convert the args into a dict.
+    Sends a post request to a given URL.
+    Takes arguments in key=value format. Requires one `url` argument to be set this way.
+    Additional key=value arguments are sent to the given URL as a JSON payload.
+    Request and response are also included in this request by default.
     """
     data_dict: dict[str, str] = {}
 

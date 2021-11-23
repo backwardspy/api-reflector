@@ -76,7 +76,7 @@ class EndpointView(RestrictedView):
     form_widget_args = {"responses": {"disabled": True}}
 
     def validate_form(self, form):
-        if not form.data['path'].startswith("/"):
+        if not form.data["path"].startswith("/"):
             form.path.data = f"/{form.path.data}"
         return super().validate_form(form)
 

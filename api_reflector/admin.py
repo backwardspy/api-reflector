@@ -61,8 +61,8 @@ class TagView(RestrictedView):
     form_excluded_columns = ("responses",)
 
     def validate_form(self, form):
-        if hasattr(form, "name") and form.name.data:
-            form.name.data = slugify(form.name.data)
+        if form.data.get("name"):
+            form.name.data = slugify(form.data["name"])
         return super().validate_form(form)
 
 
@@ -76,8 +76,8 @@ class EndpointView(RestrictedView):
     form_widget_args = {"responses": {"disabled": True}}
 
     def validate_form(self, form):
-        if not form.data["path"].startswith("/"):
-            form.path.data = f"/{form.path.data}"
+        if form.data.get("path") and not form.data["path"].startswith("/"):
+            form.path.data = f"/{form.data['path']}"
         return super().validate_form(form)
 
 

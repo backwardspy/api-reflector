@@ -92,15 +92,12 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
         "request": request,
     }
 
-    score = 0
     for rule in rules:
         args = [Template(arg).render(**template_context) for arg in rule.arguments]
         evaluator = evaluators[rule.operator]
-        if evaluator(*args):
-            score += 1
-        else:
-            score -= 1
-    return score / len(rules)
+        if not evaluator(*args):
+            return -1
+    return len(rules)
 
 
 ResponseType = TypeVar("ResponseType")

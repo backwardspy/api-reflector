@@ -117,7 +117,7 @@ def find_best_response(
         )
         for response, rules in response_rules
     ]
-
+    scores = [(score, response) for score, response in scores if score >= 0]
     # sort by score
     scores = sorted(scores, key=lambda score: score[0], reverse=True)
 

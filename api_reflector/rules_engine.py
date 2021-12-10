@@ -92,15 +92,12 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
         "request": request,
     }
 
-    score = 0
     for rule in rules:
         args = [Template(arg).render(**template_context) for arg in rule.arguments]
         evaluator = evaluators[rule.operator]
-        if evaluator(*args):
-            score += 1
-        else:
-            score -= 1
-    return score / len(rules)
+        if not evaluator(*args):
+            return -1
+    return len(rules)
 
 
 ResponseType = TypeVar("ResponseType")
@@ -120,7 +117,7 @@ def find_best_response(
         )
         for response, rules in response_rules
     ]
-
+    scores = [(score, response) for score, response in scores if score >= 0]
     # sort by score
     scores = sorted(scores, key=lambda score: score[0], reverse=True)
 

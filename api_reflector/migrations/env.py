@@ -4,10 +4,10 @@ Contains functions for setting up an alembic context and running migrations.
 
 import logging
 
-from sqlalchemy import engine_from_config, pool
-
 # pylint: disable=no-member
 from alembic import context
+from sqlalchemy import engine_from_config, pool
+
 from api_reflector import models  # pylint: disable=unused-import
 from api_reflector import db
 from api_reflector.reporting import LOG_FORMAT

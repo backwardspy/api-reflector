@@ -2,8 +2,11 @@
 Provides the top level flask application configuration.
 """
 
+import sentry_sdk
 from flask import Flask
 from flask_dance.contrib.azure import make_azure_blueprint
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from api_reflector import db
@@ -20,6 +23,14 @@ def create_app() -> Flask:
     """
     Creates a flask application and registers the api blueprint.
     """
+    if settings.sentry_dsn:
+        log.debug("Initialising Sentry SDK.")
+        sentry_sdk.init(  # pylint: disable=abstract-class-instantiated
+            dsn=settings.sentry_dsn,
+            environment=settings.environment,
+            integrations=[FlaskIntegration(), SqlalchemyIntegration()],
+        )
+
     log.debug("Initializing app.")
 
     app = Flask(__name__)

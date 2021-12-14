@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     log_json: bool = True
     log_level: str = "info"
 
-    environment: str = "production"
     sentry_dsn: Optional[str]
 
     trace_query_descriptions: bool = False

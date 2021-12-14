@@ -27,7 +27,6 @@ def create_app() -> Flask:
         log.debug("Initialising Sentry SDK.")
         sentry_sdk.init(  # pylint: disable=abstract-class-instantiated
             dsn=settings.sentry_dsn,
-            environment=settings.environment,
             integrations=[FlaskIntegration(), SqlalchemyIntegration()],
         )
 
@@ -41,7 +40,6 @@ def create_app() -> Flask:
     )
 
     app.config.update(
-        ENV=settings.environment,
         SECRET_KEY=settings.secret_key,
         SQLALCHEMY_DATABASE_URI=settings.postgres_dsn,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,

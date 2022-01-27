@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Rule Debugger</h2>
+
+<!-- GET allows examples to be easily shared. -->
+<form method="get">
+    <div class="input-group">
+        <select id="method-select" name="method" class="input-group-addon">
+            <option value="GET" {% if prefill.method=='GET' %} selected{% endif %}>GET</option>
+            <option value="POST" {% if prefill.method is not defined or prefill.method=='POST' %} selected{% endif %}>
+                POST</option>
+            <option value="DELETE" {% if prefill.method=='DELETE' %} selected{% endif %}>DELETE</option>
+            <option value="PUT" {% if prefill.method=='PUT' %} selected{% endif %}>PUT</option>
+            <option value="PATCH" {% if prefill.method=='PATCH' %} selected{% endif %}>PATCH</option>
+        </select>
+        <input type="text" id="route-text" name="route" class="form-input" placeholder="/my/api/endpoint"
+            value={{prefill.route}}>
+        <input type="submit" id="send-button" class="btn btn-primary input-group-btn" value="Send">
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="request-body">Request Body</label>
+        <textarea class="form-input" id="request-body" name="request_body" rows="10"
+            placeholder="{&quot;key&quot;: &quot;value&quot;}">{{prefill.request_body}}</textarea>
+    </div>
+</form>
+
+{% if endpoint %}
+<h3>Endpoint</h3>
+{{ endpoint }}
+
+<h4>Responses</h4>
+{% for response in endpoint.responses %}
+<div class="card">
+    <div class="card-header">
+        {{ response }}
+    </div>
+    {% if response.rules %}
+    <div class="card-body">
+        <ul>
+            {% for rule in response.rules %}
+            <li>{{ rule }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock body %}

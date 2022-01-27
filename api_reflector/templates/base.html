@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>API Reflector</title>
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <section class="navbar-section">
+            <a class="navbar-brand m-2" href="{{ url_for('api.home') }}">API Reflector</a>
+            <a class="btn btn-link" href="{{ url_for('api.debugger') }}">Debugger</a>
+            <a class="btn btn-link" href="{{ url_for('admin.index') }}">Admin</a>
+        </section>
+    </header>
+    <div class="container">
+        {% block body %}
+        {% endblock body %}
+    </div>
+    {% block scripts %}
+    {% endblock scripts %}
+</body>
+
+</html>

@@ -78,6 +78,13 @@ class ScoringRule(NamedTuple):
     arguments: list[str]
 
 
+def render_rule_arg(arg: str, request: TemplatableRequest) -> str:
+    """
+    Renders a rule argument into a string.
+    """
+    return Template(arg).render(request=request)
+
+
 def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> float:
     """
     Applies the given response rules to a request and returns the score.
@@ -88,12 +95,8 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
     if not rules:
         return 0
 
-    template_context = {
-        "request": request,
-    }
-
     for rule in rules:
-        args = [Template(arg).render(**template_context) for arg in rule.arguments]
+        args = [render_rule_arg(arg, request) for arg in rule.arguments]
         evaluator = evaluators[rule.operator]
         if not evaluator(*args):
             return -1

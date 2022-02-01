@@ -89,6 +89,7 @@ class ResponseView(RestrictedView):
 
     column_exclude_list = ("content_type",)
     inline_models = (models.Rule, models.Action)
+    form_widget_args = {"content": {"rows": 8, "style": "font-family: monospace;"}}
 
 
 admin.add_link(MenuLink(name="Home", url="/"))

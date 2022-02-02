@@ -4,6 +4,7 @@ Provides the top level flask application configuration.
 
 import sentry_sdk
 from flask import Flask
+from flask_cors import CORS
 from flask_dance.contrib.azure import make_azure_blueprint
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
@@ -33,6 +34,7 @@ def create_app() -> Flask:
     log.debug("Initializing app.")
 
     app = Flask(__name__)
+    CORS(app)
     app.wsgi_app = ProxyFix(  # type: ignore
         app.wsgi_app,
         x_proto=int(settings.use_x_forwarded_proto),

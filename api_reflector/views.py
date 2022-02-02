@@ -4,7 +4,7 @@ Defines the project's API endpoints.
 from typing import Any, Mapping
 
 import psycopg2
-from flask import Blueprint, request
+from flask import Blueprint, Response, request
 from flask_admin.base import render_template
 from jinja2 import Template
 from werkzeug.routing import Map, Rule
@@ -71,7 +71,7 @@ def home() -> tuple[Any, int]:
 
 
 @api.route("/mock/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-def mock(path: str) -> tuple[Any, int]:
+def mock(path: str) -> Response:
     """
     Mock endpoint. Tries to map the given path to a configured mock.
     """
@@ -84,7 +84,7 @@ def mock(path: str) -> tuple[Any, int]:
     active_responses = [response for response in endpoint.responses if response.is_active]
 
     if not active_responses:
-        return "No Mock Responses configured or active for this endpoint", 501
+        return Response("No Mock Responses configured or active for this endpoint", status=501)
 
     response_rules = [
         (
@@ -116,4 +116,4 @@ def mock(path: str) -> tuple[Any, int]:
 
     response.execute_actions(req_json, content)
 
-    return content, response.status_code
+    return Response(content, status=response.status_code, mimetype=response.content_type)

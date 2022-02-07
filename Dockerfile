@@ -1,4 +1,4 @@
-FROM python:3.9 as build
+FROM python:3.11-rc-slim as build
 
 WORKDIR /src
 ADD . .
@@ -6,7 +6,7 @@ ADD . .
 RUN pip install poetry==1.2.0a2
 RUN poetry build
 
-FROM python:3.9
+FROM python:3.11-rc-slim
 
 WORKDIR /app
 COPY --from=build /src/dist/api_reflector-0.0.0-py3-none-any.whl .

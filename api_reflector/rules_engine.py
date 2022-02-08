@@ -67,6 +67,8 @@ class TemplatableRequest(NamedTuple):
 
     params: Mapping[str, Any]
     json: Mapping[str, Any]
+    query: Mapping[str, Any]
+    headers: Mapping[str, Any]
 
 
 class ScoringRule(NamedTuple):

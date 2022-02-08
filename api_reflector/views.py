@@ -105,7 +105,9 @@ def mock(path: str) -> Response:
     else:
         req_json = {}
 
-    templateable_request = rules_engine.TemplatableRequest(params=params, json=req_json)
+    templateable_request = rules_engine.TemplatableRequest(
+        params=params, json=req_json, query=request.args, headers=request.headers
+    )
     response = rules_engine.find_best_response(templateable_request, response_rules)
 
     content = Template(response.content).render(

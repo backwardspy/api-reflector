@@ -61,6 +61,7 @@ plugins = [
 
 [tool.pylint.messages_control]
 max-line-length = 120
+ignore = ["settings.py", "wsgi.py"]
 disable = [
     "logging-fstring-interpolation",
 ]

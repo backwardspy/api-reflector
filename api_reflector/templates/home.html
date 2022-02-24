@@ -56,7 +56,13 @@
                         <div class="row">
                             <div class="col-auto me-auto">
                                 <a href="{{ url_for('response.edit_view', id=response.id) }}">
-                                    {{ response.name}} ({{ response }})
+                                    {% if not response.is_active %}
+                                    <s>
+                                    {% endif %}
+                                        {{ response.name}} ({{ response }})
+                                    {% if not response.is_active %}
+                                    </s>
+                                    {% endif %}
                                 </a>
                             </div>
                             <div class="col-auto">

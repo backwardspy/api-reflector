@@ -5,6 +5,7 @@ from flask import redirect, url_for
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
+from jinja2.runtime import Context
 from slugify import slugify
 
 from api_reflector import auth, db, models
@@ -90,6 +91,20 @@ class ResponseView(RestrictedView):
     column_exclude_list = ("content_type",)
     inline_models = (models.Rule, models.Action)
     form_widget_args = {"content": {"rows": 8, "style": "font-family: monospace;"}}
+
+    # pylint: disable=no-self-use
+    def content_formatter(self, _ctx: Context, model: models.Model, _name: str):
+        """
+        Limits the content field to a maximum length in the list view.
+        """
+        max_length = 50
+        if len(model.content) > max_length:
+            return f"{model.content[:max_length - 3]}..."
+        return model.content
+
+    column_formatters = {
+        "content": content_formatter,
+    }
 
 
 admin.add_link(MenuLink(name="Home", url="/"))

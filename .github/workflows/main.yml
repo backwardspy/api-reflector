@@ -63,6 +63,7 @@ jobs:
         run: poetry build
       - name: Publish Package
         run: poetry publish
+        continue-on-error: true
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3

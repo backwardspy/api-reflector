@@ -5,7 +5,7 @@ Defines the rules engine.
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple, TypeVar, Union
 
-from jinja2 import Template
+from api_reflector.templating import default_context, template_env
 
 
 class Operator(Enum):
@@ -90,12 +90,13 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
     if not rules:
         return 0
 
-    template_context = {
+    template_context: dict[str, Any] = {
         "request": request,
+        **default_context,
     }
 
     for rule in rules:
-        args = [Template(arg).render(**template_context) for arg in rule.arguments]
+        args = [template_env.from_string(arg).render(**template_context) for arg in rule.arguments]
         evaluator = evaluators[rule.operator]
         if not evaluator(*args):
             return -1

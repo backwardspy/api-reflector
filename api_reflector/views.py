@@ -1,38 +1,21 @@
 """
 Defines the project's API endpoints.
 """
-from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping
-from uuid import uuid4
-from zoneinfo import ZoneInfo
 
 import psycopg2
 from flask import Blueprint, Response, request
 from flask_admin.base import render_template
-from jinja2 import Environment
 from werkzeug.routing import Map, Rule
 
 from api_reflector import db, models, rules_engine
 from api_reflector.auth import requires_auth
 from api_reflector.endpoint import ensure_leading_slash
 from api_reflector.reporting import get_logger
+from api_reflector.templating import default_context, template_env
 
 api = Blueprint("api", __name__)
 log = get_logger(__name__)
-
-
-template_env = Environment()
-
-
-def convert_to_tz(date_time: datetime, time_zone_name: str) -> datetime:
-    """
-    converts a naive utc datetime to a timezone
-    """
-    date_time = date_time.replace(tzinfo=timezone.utc)
-    return date_time.astimezone(tz=ZoneInfo(time_zone_name))
-
-
-template_env.filters["in_tz"] = convert_to_tz
 
 
 def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
@@ -130,9 +113,7 @@ def mock(path: str) -> Response:
     content = template_env.from_string(response.content).render(
         {
             "request": templateable_request,
-            "now": datetime.utcnow,
-            "hours": lambda n: timedelta(hours=n),
-            "guid": lambda: str(uuid4()),
+            **default_context,
         }
     )
 

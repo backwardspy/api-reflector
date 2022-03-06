@@ -23,6 +23,9 @@ class Settings(BaseSettings):
 
     trace_query_descriptions: bool = False
 
+    # in seconds. delays will not last longer than this.
+    maximum_delay_length: Optional[float] = None
+
     @validator("azure_client_id", "azure_client_secret", "azure_tenant")
     @classmethod
     def enabled_auth_settings(cls, v: Optional[str], values: Mapping[str, Any]) -> Optional[str]:

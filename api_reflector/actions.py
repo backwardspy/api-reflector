@@ -8,6 +8,7 @@ from enum import Enum
 import requests
 
 from api_reflector.reporting import get_logger
+from settings import settings
 
 log = get_logger(__name__)
 
@@ -29,7 +30,16 @@ def delay(*args, **_kwargs) -> None:
     Sleep for an amount of time.
     Takes a single positional argument; the number of seconds to sleep for.
     """
-    time.sleep(float(args[0]))
+    length = float(args[0])
+
+    if settings.maximum_delay_length is not None and length > settings.maximum_delay_length:
+        log.warning(
+            f"Delay length of {length} seconds exceeds maximum of {settings.maximum_delay_length} seconds. "
+            "Delay will be clamped to the configured maximum."
+        )
+        length = min(length, settings.maximum_delay_length)
+
+    time.sleep(length)
 
 
 def process_callback(*args, **kwargs):

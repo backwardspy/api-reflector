@@ -1,0 +1,54 @@
+#!/bin/sh
+. scripts/_common
+
+if ! poetry --version | grep 1.2; then
+    warn 'Poetry version 1.2 is required. This script may not function correctly.'
+fi
+
+install() {
+    info 'Installing dependencies...'
+    poetry install
+    hr
+}
+
+psql_cmd() {
+    psql -h localhost -U postgres -c "$1" -o /dev/null
+}
+
+test_postgres() {
+    psql_cmd 'select 1' >/dev/null 2>&1
+}
+
+make_postgres() {
+    if ! which docker; then
+        warn 'Docker not found.'
+        info 'Please either setup PostgreSQL on localhost:5432 or install Docker.'
+        exit 1
+    fi
+
+    info 'Creating PostgreSQL docker container...'
+    docker run -d --rm --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust -p5432:5432 postgres
+    hr
+}
+
+make_databases() {
+    info 'Making api_reflector & api_reflector_test databases...'
+    psql_cmd 'create database api_reflector' >/dev/null 2>&1 || true
+    psql_cmd 'create database api_reflector_test' >/dev/null 2>&1 || true
+    hr
+}
+
+ensure_postgres() {
+    if test_postgres; then
+        info 'Postgres is available on localhost:5432'
+        hr
+    else
+        make_postgres
+        for i in $(seq 5); do test_connection && break || sleep 3; done
+    fi
+    make_databases
+}
+
+install
+ensure_postgres
+poetry run scripts/migrate

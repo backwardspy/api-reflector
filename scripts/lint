@@ -1,0 +1,20 @@
+#!/bin/sh
+. scripts/_common
+
+info 'Running isort...'
+isort --check .
+hr
+
+info 'Running black...'
+black --check .
+hr
+
+info 'Running pylint...'
+pylint api_reflector
+hr
+
+info 'Running mypy...'
+mypy .
+hr
+
+info 'All passed!'

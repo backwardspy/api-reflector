@@ -6,6 +6,9 @@ package or docker container.
 import os
 
 import alembic.config
+import fasteners
+
+from settings import settings
 
 here = os.path.dirname(os.path.abspath(__file__))
 alembic_ini = os.path.join(here, "alembic.ini")
@@ -17,4 +20,5 @@ def main():
     """
     Runs `alembic upgrade head`.
     """
-    alembic.config.main(argv=alembic_args)
+    with fasteners.InterProcessLock(settings.lockfile_path):
+        alembic.config.main(argv=alembic_args)

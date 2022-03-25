@@ -1,0 +1,12 @@
+#!/bin/sh
+. scripts/_common
+
+info 'Running isort...'
+isort .
+hr
+
+info 'Running black...'
+black .
+hr
+
+info 'Done!'

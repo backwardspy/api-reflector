@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Any, Mapping, Optional
 
 from pydantic import BaseSettings, PostgresDsn, validator
@@ -25,6 +26,8 @@ class Settings(BaseSettings):
 
     # in seconds. delays will not last longer than this.
     maximum_delay_length: Optional[float] = None
+
+    lockfile_path: Path = Path("/tmp/.api-reflector.lock")
 
     @validator("azure_client_id", "azure_client_secret", "azure_tenant")
     @classmethod

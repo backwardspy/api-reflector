@@ -1,0 +1,8 @@
+#!/bin/sh
+. scripts/_common
+
+info 'Running migrations...'
+api-reflector-migrate
+hr
+
+info 'Done!'

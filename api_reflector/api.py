@@ -44,6 +44,7 @@ def create_app() -> Flask:
     app.config.update(
         SECRET_KEY=settings.secret_key,
         SQLALCHEMY_DATABASE_URI=settings.postgres_dsn,
+        SQLALCHEMY_ENGINE_OPTIONS=settings.postgres_engine_options,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLASK_ADMIN_SWATCH="darkly",
     )

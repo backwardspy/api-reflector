@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     use_x_forwarded_proto: bool = False
 
     postgres_dsn: PostgresDsn
+    postgres_engine_options: dict = {"connect_args": {"application_name": "api-reflector"}}
 
     log_json: bool = True
     log_level: str = "info"

@@ -81,18 +81,16 @@ class Response(Model):
     endpoint = relationship("Endpoint", back_populates="responses")
     rules = relationship("Rule", back_populates="response")
     actions = relationship("Action", back_populates="response")
-    tags = relationship("Tag", secondary=response_tag)
+    tags = relationship("Tag", secondary=response_tag, back_populates="responses")
 
     def __str__(self) -> str:
         max_body_length = 20
         if len(self.content) > max_body_length:
-            body = self.content[:max_body_length] + "..."
+            body = f"{self.content[:max_body_length]}..."
         else:
             body = self.content
 
-        if body:
-            return f"{self.status_code} {body}"
-        return str(self.status_code)
+        return f"{self.status_code} {body}" if body else str(self.status_code)
 
     def execute_actions(self, req_json: Mapping[str, Any], content: str):
         """
@@ -171,7 +169,7 @@ class Tag(Model):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False, default="")
 
-    responses = relationship("Response", secondary=response_tag)
+    responses = relationship("Response", secondary=response_tag, back_populates="tags")
 
     def __str__(self) -> str:
         return f"{self.name}"

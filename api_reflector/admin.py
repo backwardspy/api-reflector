@@ -92,7 +92,6 @@ class ResponseView(RestrictedView):
     inline_models = (models.Rule, models.Action)
     form_widget_args = {"content": {"rows": 8, "style": "font-family: monospace;"}}
 
-    # pylint: disable=no-self-use
     def content_formatter(self, _ctx: Context, model: models.Model, _name: str):
         """
         Limits the content field to a maximum length in the list view.

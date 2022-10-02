@@ -103,12 +103,12 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
     return len(rules)
 
 
-ResponseType = TypeVar("ResponseType")
+ResponseT = TypeVar("ResponseT")
 
 
 def find_best_response(
-    scoreable_request: TemplatableRequest, response_rules: list[tuple[ResponseType, list[ScoringRule]]]
-) -> ResponseType:
+    scoreable_request: TemplatableRequest, response_rules: list[tuple[ResponseT, list[ScoringRule]]]
+) -> ResponseT:
     """
     Using the given collection of responses & rules, returns the highest scoring response for the given request.
     """

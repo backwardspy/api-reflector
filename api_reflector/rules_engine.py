@@ -2,6 +2,7 @@
 Defines the rules engine.
 """
 
+import operator
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple, TypeVar, Union
 
@@ -47,15 +48,15 @@ EvaluatorFunction2 = Callable[[str, str], bool]
 EvaluatorFunction = Union[EvaluatorFunction1, EvaluatorFunction2]
 
 evaluators: dict[Operator, EvaluatorFunction] = {
-    Operator.EQUAL: lambda x, y: x == y,
-    Operator.NOT_EQUAL: lambda x, y: x != y,
+    Operator.EQUAL: operator.eq,
+    Operator.NOT_EQUAL: operator.ne,
     Operator.LESS_THAN: lambda x, y: float(x) < float(y),
     Operator.LESS_THAN_EQUAL: lambda x, y: float(x) <= float(y),
     Operator.GREATER_THAN: lambda x, y: float(x) > float(y),
     Operator.GREATER_THAN_EQUAL: lambda x, y: float(x) >= float(y),
-    Operator.IS_EMPTY: lambda x: bool(x) is False,
-    Operator.IS_NOT_EMPTY: lambda x: bool(x) is True,
-    Operator.CONTAINS: lambda x, y: y in x,
+    Operator.IS_EMPTY: lambda x: not bool(x),
+    Operator.IS_NOT_EMPTY: operator.truth,
+    Operator.CONTAINS: operator.contains,
     Operator.NOT_CONTAINS: lambda x, y: y not in x,
 }
 

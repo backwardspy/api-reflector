@@ -56,10 +56,10 @@ def process_callback(*args, **kwargs):
         data_dict[split_vals[0]] = split_vals[1]
 
     # Add the kwargs to the new data_dict to provide one dict to send in the request to the callback service
-    data_dict.update(kwargs)
+    data_dict |= kwargs
 
     try:
-        requests.request("POST", url=data_dict["url"], data=json.dumps(data_dict))
+        requests.request("POST", url=data_dict["url"], data=json.dumps(data_dict), timeout=5)
     except requests.exceptions.RequestException as ex:
         log.warning(f"Check all Action arguments have been provided and that the callback service is running`{ex}`")
 

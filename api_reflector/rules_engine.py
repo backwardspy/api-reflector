@@ -3,6 +3,7 @@ Defines the rules engine.
 """
 
 import operator
+import random
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple, TypeVar, Union
 
@@ -125,5 +126,5 @@ def find_best_response(
     # sort by score
     scores = sorted(scores, key=lambda score: score[0], reverse=True)
 
-    # return the best
-    return scores[0][1]
+    # pick a score from the best options
+    return random.choice([score[1] for score in scores if score[0] == scores[0][0]])

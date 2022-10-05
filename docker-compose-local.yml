@@ -1,0 +1,42 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+    user: postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5438:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-reflector:
+    build: .
+    ports:
+      - "6502:6502"
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    env_file:
+      - ./.env.example
+    environment:
+      - postgres_dsn=postgresql://postgres:pass@postgres/postgres
+    entrypoint: sh -c "gunicorn --workers=2 --threads=2 --error-logfile=- --access-logfile=- --bind=0.0.0.0:6502 wsgi --reload"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

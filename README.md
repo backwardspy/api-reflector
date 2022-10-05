@@ -41,6 +41,19 @@ azure_tenant
 By default, insecure redirect URLS will be rejected.
 If you want to test locally, set OAUTHLIB_INSECURE_TRANSPORT=true in your environment.
 
+## Docker-compose
+Spin up postgres and api reflector containers with docker compose:
+
+From project root:
+```sh
+docker-compose -f docker-compose-local.yml up
+```
+Exposed ports:
+
+`posgtres: 5438`
+
+`apireflector: Go to browser on http://localhost:6502`
+
 ## Required Kubernetes Annotations for Ingress
 
 If you use an external service for proxying traffic into your Kubernetes clusters such as Azure Front Door or Cloudflare, you'll need to pass the following example annotation:

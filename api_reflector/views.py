@@ -6,6 +6,7 @@ from typing import Any, Mapping
 import psycopg2
 from flask import Blueprint, Response, request
 from flask_admin.base import render_template
+from jinja2.exceptions import TemplateError, TemplateSyntaxError, UndefinedError
 from werkzeug.routing import Map, Rule
 
 from api_reflector import db, models, rules_engine
@@ -36,6 +37,21 @@ def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
 
     # we're disabling mypy here because you're supposed to get strings back from `match`, not full endpoint objects.
     return urls.match(path, method=request.method)  # type: ignore
+
+
+def _process_error_response(ex: UndefinedError | TemplateSyntaxError | TemplateError) -> Response:
+    """Returns the error response for Jinja exceptions"""
+
+    if isinstance(ex, UndefinedError):
+        msg = "Undefined field used in the response template"
+    elif isinstance(ex, TemplateSyntaxError):
+        msg = "Syntax error in response template"
+    else:
+        msg = "Failed to render fields in the response template"
+
+    error_content = f"{msg}. Details: {ex}"
+
+    return Response(error_content, status=500, mimetype="text/plain")
 
 
 @api.route("/healthz")
@@ -108,15 +124,22 @@ def mock(path: str) -> Response:
     templateable_request = rules_engine.TemplatableRequest(
         params=params, json=req_json, query=request.args, headers=request.headers
     )
-    response = rules_engine.find_best_response(templateable_request, response_rules)
 
-    content = template_env.from_string(response.content).render(
-        {
-            "request": templateable_request,
-            **default_context,
-        }
-    )
+    try:
+        response = rules_engine.find_best_response(templateable_request, response_rules)
+        content = template_env.from_string(response.content).render(
+            {
+                "request": templateable_request,
+                **default_context,
+            }
+        )
+        response.execute_actions(req_json, content)
 
-    response.execute_actions(req_json, content)
-
-    return Response(content, status=response.status_code, mimetype=response.content_type)
+    except UndefinedError as ex:
+        return _process_error_response(ex)
+    except TemplateSyntaxError as ex:
+        return _process_error_response(ex)
+    except TemplateError as ex:
+        return _process_error_response(ex)
+    else:
+        return Response(content, status=response.status_code, mimetype=response.content_type)

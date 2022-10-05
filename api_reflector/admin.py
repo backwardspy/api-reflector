@@ -75,6 +75,10 @@ class EndpointView(RestrictedView):
 
     form_excluded_columns = ("responses",)
     form_widget_args = {"responses": {"disabled": True}}
+    column_searchable_list = (
+        "name",
+        "path",
+    )
 
     def validate_form(self, form):
         if form.data.get("path") and not form.data["path"].startswith("/"):
@@ -91,6 +95,7 @@ class ResponseView(RestrictedView):
     column_exclude_list = ("content_type",)
     inline_models = (models.Rule, models.Action)
     form_widget_args = {"content": {"rows": 8, "style": "font-family: monospace;"}}
+    column_searchable_list = ("name",)
 
     def content_formatter(self, _ctx: Context, model: models.Model, _name: str):
         """

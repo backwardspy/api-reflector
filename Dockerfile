@@ -1,17 +1,16 @@
-FROM ghcr.io/binkhq/python:3.9 as build
+FROM ghcr.io/binkhq/python:3.10-poetry as build
 
 WORKDIR /src
 ADD . .
 
-RUN pip install poetry==1.2.0a2
 RUN poetry build
 
-FROM ghcr.io/binkhq/python:3.9
+FROM ghcr.io/binkhq/python:3.10
 
 WORKDIR /app
-COPY --from=build /src/dist/api_reflector-0.0.0-py3-none-any.whl .
+COPY --from=build /src/dist/*.whl .
 COPY --from=build /src/wsgi.py .
-RUN pip install api_reflector-0.0.0-py3-none-any.whl
+RUN pip install *.whl && rm *.whl
 
 ENTRYPOINT [ "gunicorn" ]
 

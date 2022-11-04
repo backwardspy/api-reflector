@@ -1,6 +1,8 @@
+# views.py
 """
 Defines the project's API endpoints.
 """
+from datetime import datetime
 from typing import Any, Mapping
 
 import psycopg2
@@ -13,10 +15,21 @@ from api_reflector import db, models, rules_engine
 from api_reflector.auth import requires_auth
 from api_reflector.endpoint import ensure_leading_slash
 from api_reflector.reporting import get_logger
+from api_reflector.storage import get_value_from_storage
 from api_reflector.templating import default_context, template_env
 
 api = Blueprint("api", __name__)
 log = get_logger(__name__)
+
+
+def _get_storage_obj(req_endpoint_path: str) -> dict:
+    storage_val = get_value_from_storage(req_endpoint_path)
+    if storage_val:
+        expiry = storage_val.get("expiry")
+        if expiry and expiry < datetime.now().timestamp():
+            return {}
+        return storage_val
+    return {}
 
 
 def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
@@ -86,6 +99,7 @@ def home() -> tuple[Any, int]:
     return render_template("home.html", endpoints=endpoints, tags=tags), 200
 
 
+@api.route("/mock/auth", methods=["POST"])
 @api.route("/mock/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 def mock(path: str) -> Response:
     """
@@ -102,6 +116,7 @@ def mock(path: str) -> Response:
     if not active_responses:
         return Response("No Mock Responses configured or active for this endpoint", status=501)
 
+    storage_obj = _get_storage_obj(endpoint.path)
     response_rules = [
         (
             response,
@@ -122,7 +137,7 @@ def mock(path: str) -> Response:
         req_json = {}
 
     templateable_request = rules_engine.TemplatableRequest(
-        params=params, json=req_json, query=request.args, headers=request.headers
+        params=params, json=req_json, query=request.args, headers=request.headers, storage=storage_obj
     )
 
     try:

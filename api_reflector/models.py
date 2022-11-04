@@ -100,7 +100,9 @@ class Response(Model):
 
         for action in self.actions:
             log.debug(f"Executing action: {action}")
-            actions.action_executors[action.action](*action.arguments, request=req_json, response=content)
+            actions.action_executors[action.action](
+                *action.arguments, request=req_json, response=content, endpoint=self.endpoint.path
+            )
 
 
 class Rule(Model):
@@ -155,6 +157,7 @@ class Action(Model):
         action_str = {
             actions.Action.DELAY: "Delay for {} second(s)",
             actions.Action.CALLBACK: "Do the callback",
+            actions.Action.STORE: "Store key-value pair in storage",
         }[self.action]
         return action_str.format(*self.arguments)
 

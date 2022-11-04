@@ -3,11 +3,13 @@ Contains types and methods related to rules engine actions.
 """
 import json
 import time
+from datetime import datetime, timedelta
 from enum import Enum
 
 import requests
 
 from api_reflector.reporting import get_logger
+from api_reflector.storage import set_value_in_storage
 from settings import settings
 
 log = get_logger(__name__)
@@ -20,6 +22,7 @@ class Action(Enum):
 
     DELAY = "DELAY"
     CALLBACK = "CALLBACK"
+    STORE = "STORE"
 
     def __str__(self) -> str:
         return self.value
@@ -64,7 +67,29 @@ def process_callback(*args, **kwargs):
         log.warning(f"Check all Action arguments have been provided and that the callback service is running`{ex}`")
 
 
+def set_value(*args, **kwargs):
+    """
+    Sets value for key specified in args into the storage object
+    """
+    key = args[0]
+    value = args[1]
+    endpoint = kwargs["endpoint"].rsplit("/", 1)[0]
+
+    if settings.session_timeout:
+        # FIXME: Could also allow expiry via action args. i.e delta = args[2]
+        delta = settings.session_timeout
+        expiry = datetime.now() + timedelta(minutes=int(delta))
+        storage_value = {key: value, "expiry": expiry.timestamp()}
+    else:
+        storage_value = {
+            key: value,
+        }
+
+    set_value_in_storage(key=endpoint, value=storage_value)
+
+
 action_executors = {
     Action.DELAY: delay,
     Action.CALLBACK: process_callback,
+    Action.STORE: set_value,
 }

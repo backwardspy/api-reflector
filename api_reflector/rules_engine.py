@@ -7,6 +7,8 @@ import random
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple, TypeVar, Union
 
+from werkzeug import exceptions
+
 from api_reflector.templating import default_context, template_env
 
 
@@ -71,6 +73,7 @@ class TemplatableRequest(NamedTuple):
     json: Mapping[str, Any]
     query: Mapping[str, Any]
     headers: Mapping[str, Any]
+    storage: Mapping[str, bool] | None = None
 
 
 class ScoringRule(NamedTuple):
@@ -101,7 +104,10 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
         args = [template_env.from_string(arg).render(**template_context) for arg in rule.arguments]
         evaluator = evaluators[rule.operator]
         if not evaluator(*args):
-            return -1
+            for argument in rule.arguments:
+                if "authorized" in argument:
+                    raise exceptions.Unauthorized
+                return -1
     return len(rules)
 
 
@@ -122,6 +128,7 @@ def find_best_response(
         )
         for response, rules in response_rules
     ]
+
     scores = [(score, response) for score, response in scores if score >= 0]
     # sort by score
     scores = sorted(scores, key=lambda score: score[0], reverse=True)

@@ -30,6 +30,9 @@ class Settings(BaseSettings):
 
     lockfile_path: Path = Path("/tmp/.api-reflector.lock")
 
+    # Auth session expiry (minutes)
+    session_timeout: int | None = None
+
     @validator("azure_client_id", "azure_client_secret", "azure_tenant")
     @classmethod
     def enabled_auth_settings(cls, v: Optional[str], values: Mapping[str, Any]) -> Optional[str]:

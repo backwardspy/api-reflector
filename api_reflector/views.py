@@ -1,7 +1,7 @@
 """
 Defines the project's API endpoints.
 """
-from typing import Any, Mapping
+from typing import Any, Mapping, Union
 
 import psycopg2
 from flask import Blueprint, Response, request
@@ -39,7 +39,7 @@ def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
     return urls.match(path, method=request.method)  # type: ignore
 
 
-def _process_error_response(ex: UndefinedError | TemplateSyntaxError | TemplateError) -> Response:
+def _process_error_response(ex: Union[UndefinedError, TemplateSyntaxError, TemplateError]) -> Response:
     """Returns the error response for Jinja exceptions"""
 
     if isinstance(ex, UndefinedError):

@@ -33,7 +33,7 @@ services:
       - ./.env.example
     environment:
       - postgres_dsn=postgresql://postgres:pass@postgres/postgres
-    entrypoint: sh -c "gunicorn --workers=2 --threads=2 --error-logfile=- --access-logfile=- --bind=0.0.0.0:6502 wsgi --reload"
+    entrypoint: sh -c "gunicorn --error-logfile=- --access-logfile=- --bind=0.0.0.0:6502 wsgi --reload"
     depends_on:
       postgres:
         condition: service_healthy

@@ -1,14 +1,34 @@
 """
 Declares the flask-admin instance and sets up the model views.
 """
+import json
+from json import JSONDecodeError
+
 from flask import redirect, url_for
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
 from jinja2.runtime import Context
 from slugify import slugify
+from wtforms import validators
 
 from api_reflector import auth, db, models
+
+
+def is_valid_json(data: str) -> None:
+    """
+    Validator function for checking whether form field content is a valid JSON.
+    """
+
+    try:
+        json.loads(data)
+    except JSONDecodeError as exc:
+        raise validators.ValidationError("Response content data must be a valid JSON object or empty.") from exc
+
+
+form_validators = {
+    "application/json": is_valid_json,
+}
 
 
 def admin_view(model: db.Model):
@@ -96,6 +116,11 @@ class ResponseView(RestrictedView):
     inline_models = (models.Rule, models.Action)
     form_widget_args = {"content": {"rows": 8, "style": "font-family: monospace;"}}
     column_searchable_list = ("name",)
+
+    def on_model_change(self, form, model, is_created):
+        if validator := form_validators.get(form.content_type.data):
+            validator(form.content.data)
+            super().on_model_change(form, model, is_created)
 
     def content_formatter(self, _ctx: Context, model: models.Model, _name: str):
         """

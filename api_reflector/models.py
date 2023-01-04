@@ -74,7 +74,7 @@ class Response(Model):
 
     status_code = Column(Integer, nullable=False, default=200)
     content_type = Column(String, nullable=False, default="application/json")
-    content = Column(Text, nullable=False, default="")
+    content = Column(Text, nullable=False, default="{}")
 
     is_active = Column(Boolean, nullable=False, default=True)
 

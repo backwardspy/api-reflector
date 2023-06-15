@@ -1,10 +1,6 @@
 #!/bin/sh
 . scripts/_common
 
-if ! poetry --version | grep 1.2; then
-    warn 'Poetry version 1.2 is required. This script may not function correctly.'
-fi
-
 install() {
     info 'Installing dependencies...'
     poetry install

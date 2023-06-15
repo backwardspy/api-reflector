@@ -4,7 +4,7 @@
 """
 Contains definitions of SQLAlchemy database models.
 """
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any, Mapping, cast
 
 from sqlalchemy import (
     ARRAY,
@@ -23,7 +23,13 @@ from sqlalchemy.orm import DeclarativeMeta, relationship
 from api_reflector import actions, db, endpoint, rules_engine
 from api_reflector.reporting import get_logger
 
-Model = db.Model  # type: DeclarativeMeta
+if TYPE_CHECKING:
+
+    class Model(db.Model):
+        """Dummy base class for type checking"""
+
+else:
+    Model = db.Model  # type: DeclarativeMeta
 
 
 log = get_logger(__name__)
@@ -40,7 +46,7 @@ class Endpoint(Model):
 
     name = Column(String, nullable=False)
 
-    method = Column(Enum(endpoint.Method), nullable=False)
+    method: Column[endpoint.Method] = Column(Enum(endpoint.Method), nullable=False)
     path = Column(String, nullable=False)
 
     UniqueConstraint(method, path)
@@ -88,7 +94,7 @@ class Response(Model):
         if len(self.content) > max_body_length:
             body = f"{self.content[:max_body_length]}..."
         else:
-            body = self.content
+            body = cast(str, self.content)
 
         return f"{self.status_code} {body}" if body else str(self.status_code)
 
@@ -114,12 +120,13 @@ class Rule(Model):
 
     response_id = Column(Integer, ForeignKey("response.id"), nullable=False)
 
-    operator = Column(Enum(rules_engine.Operator), nullable=False)
-    arguments = Column(ARRAY(String), nullable=False)
+    operator: Column[rules_engine.Operator] = Column(Enum(rules_engine.Operator), nullable=False)
+    arguments: Column[list[str]] = Column(ARRAY(String), nullable=False)
 
     response = relationship("Response", back_populates="rules")
 
     def __str__(self) -> str:
+        operator = cast(rules_engine.Operator, self.operator)
         rule_str = {
             rules_engine.Operator.EQUAL: "{} == {}",
             rules_engine.Operator.NOT_EQUAL: "{} != {}",
@@ -131,7 +138,7 @@ class Rule(Model):
             rules_engine.Operator.IS_NOT_EMPTY: "{} is not empty",
             rules_engine.Operator.CONTAINS: "{} contains {}",
             rules_engine.Operator.NOT_CONTAINS: "{} does not contain {}",
-        }[self.operator]
+        }[operator]
         return rule_str.format(*self.arguments)
 
 
@@ -146,16 +153,17 @@ class Action(Model):
 
     response_id = Column(Integer, ForeignKey("response.id"), nullable=False)
 
-    action = Column(Enum(actions.Action), nullable=False)
-    arguments = Column(ARRAY(String), nullable=False)
+    action: Column[actions.Action] = Column(Enum(actions.Action), nullable=False)
+    arguments: Column[list[str]] = Column(ARRAY(String), nullable=False)
 
     response = relationship("Response", back_populates="actions")
 
     def __str__(self) -> str:
+        action = cast(actions.Action, self.action)
         action_str = {
             actions.Action.DELAY: "Delay for {} second(s)",
             actions.Action.CALLBACK: "Do the callback",
-        }[self.action]
+        }[action]
         return action_str.format(*self.arguments)
 
 

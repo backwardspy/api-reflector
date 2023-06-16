@@ -4,10 +4,7 @@ version = "0.0.0"
 description = "A configurable API mocking service"
 authors = ["Chris Latham <cl@bink.com>"]
 license = "MIT"
-packages = [
-    { include = "api_reflector" },
-    { include = "settings.py" },
-]
+packages = [{ include = "api_reflector" }, { include = "settings.py" }]
 
 [tool.poetry.scripts]
 api-reflector-migrate = "api_reflector.migrations.run_migrations:main"
@@ -19,6 +16,7 @@ Flask-Admin = "^1.6.0"
 pydantic = "^1.10.2"
 psycopg2-binary = "^2.9.3"
 Flask-SQLAlchemy = "^2.5.1"
+SQLAlchemy = "<2"
 Jinja2 = "^3.1.2"
 Flask-Dance = "^6.1.1"
 gunicorn = "^20.1.0"
@@ -58,13 +56,9 @@ profile = "black"
 
 [tool.mypy]
 ignore_missing_imports = true
-plugins = [
-    "sqlalchemy.ext.mypy.plugin",
-]
+plugins = ["sqlalchemy.ext.mypy.plugin"]
 
 [tool.pylint.messages_control]
 max-line-length = 120
 ignore = ["settings.py", "wsgi.py"]
-disable = [
-    "logging-fstring-interpolation",
-]
+disable = ["logging-fstring-interpolation"]

@@ -1,7 +1,7 @@
 """
 Defines the project's API endpoints.
 """
-from typing import Any, Mapping, Union, cast
+from typing import Any, Mapping, Union
 
 import psycopg2
 from flask import Blueprint, Response, request
@@ -32,7 +32,7 @@ def match_endpoint(path: str) -> tuple[models.Endpoint, Mapping[str, Any]]:
         models.Endpoint.method == request.method.upper()
     ).all()
 
-    rules = [Rule(cast(str, endpoint.path), endpoint=endpoint, methods=[request.method]) for endpoint in endpoints]
+    rules = [Rule(endpoint.path, endpoint=endpoint, methods=[request.method]) for endpoint in endpoints]
     urls = Map(rules).bind("localhost")
 
     # we're disabling mypy here because you're supposed to get strings back from `match`, not full endpoint objects.
@@ -141,4 +141,5 @@ def mock(path: str) -> Response:
         return _process_error_response(ex)
     except TemplateError as ex:
         return _process_error_response(ex)
-    return Response(content, status=response.status_code, mimetype=response.content_type)
+    else:
+        return Response(content, status=response.status_code, mimetype=response.content_type)

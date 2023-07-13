@@ -21,22 +21,5 @@ services:
       timeout: 5s
       retries: 5
 
-  api-reflector:
-    build: .
-    ports:
-      - "6502:6502"
-    volumes:
-      - type: bind
-        source: .
-        target: /app
-    env_file:
-      - ./.env.example
-    environment:
-      - postgres_dsn=postgresql://postgres:pass@postgres/postgres
-    entrypoint: sh -c "gunicorn --error-logfile=- --access-logfile=- --bind=0.0.0.0:6502 wsgi --reload"
-    depends_on:
-      postgres:
-        condition: service_healthy
-
 volumes:
   pgdata:

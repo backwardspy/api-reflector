@@ -135,11 +135,7 @@ def mock(path: str) -> Response:
         )
         response.execute_actions(req_json, content)
 
-    except UndefinedError as ex:
+    except (UndefinedError, TemplateSyntaxError, TemplateError) as ex:
         return _process_error_response(ex)
-    except TemplateSyntaxError as ex:
-        return _process_error_response(ex)
-    except TemplateError as ex:
-        return _process_error_response(ex)
-    else:
-        return Response(content, status=response.status_code, mimetype=response.content_type)
+
+    return Response(content, status=response.status_code, mimetype=response.content_type)

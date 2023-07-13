@@ -5,7 +5,8 @@ from api_reflector.rules_engine import Operator, evaluators
 
 
 def test_operators():
-    cases = [
+    """Test operator outputs"""
+    cases: list[tuple[Operator, tuple, bool]] = [
         (Operator.EQUAL, (8, 32), False),
         (Operator.EQUAL, (16, 16), True),
         (Operator.LESS_THAN, (16, 8), False),

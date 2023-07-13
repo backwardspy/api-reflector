@@ -32,7 +32,7 @@ blinker = "^1.5"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
-mypy = "^0.981"
+mypy = "^1.4.1"
 pytest = "^7.1.3"
 ptpython = "^3.0.20"
 Werkzeug = "^2.2.2"
@@ -56,7 +56,9 @@ profile = "black"
 
 [tool.mypy]
 ignore_missing_imports = true
-plugins = ["sqlalchemy.ext.mypy.plugin"]
+check_untyped_defs = true
+exclude = "api_reflector/migrations/versions/"
+plugins = ["sqlalchemy.ext.mypy.plugin", "pydantic.mypy"]
 
 [tool.pylint.messages_control]
 max-line-length = 120

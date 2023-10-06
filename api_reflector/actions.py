@@ -8,6 +8,7 @@ from enum import Enum
 import requests
 
 from api_reflector.reporting import get_logger
+from api_reflector.storage import GlobalStorage
 from settings import settings
 
 log = get_logger(__name__)
@@ -20,6 +21,7 @@ class Action(Enum):
 
     DELAY = "DELAY"
     CALLBACK = "CALLBACK"
+    STORE = "STORE"
 
     def __str__(self) -> str:
         return self.value
@@ -64,7 +66,18 @@ def process_callback(*args, **kwargs):
         log.warning(f"Check all Action arguments have been provided and that the callback service is running`{ex}`")
 
 
+def storage_set(*args, **_kwargs) -> None:
+    """
+    Expects args in 'key=value' format.
+    Keyword arguments are ignored.
+    """
+    for arg in args:
+        name, value = arg.split("=")
+        GlobalStorage().set(name, value, time.time() + settings.storage_expiry)
+
+
 action_executors = {
     Action.DELAY: delay,
     Action.CALLBACK: process_callback,
+    Action.STORE: storage_set,
 }

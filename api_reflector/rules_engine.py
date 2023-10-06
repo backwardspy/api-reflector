@@ -7,6 +7,7 @@ import random
 from enum import Enum
 from typing import Any, Callable, Mapping, NamedTuple, TypeVar, Union
 
+from api_reflector.storage import GlobalStorage
 from api_reflector.templating import default_context, template_env
 
 
@@ -94,6 +95,7 @@ def score_response(request: TemplatableRequest, rules: list[ScoringRule]) -> flo
 
     template_context: dict[str, Any] = {
         "request": request,
+        "storage": GlobalStorage(),
         **default_context,
     }
 

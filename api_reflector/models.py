@@ -154,7 +154,8 @@ class Action(Model):
     def __str__(self) -> str:
         action_str = {
             actions.Action.DELAY: "Delay for {} second(s)",
-            actions.Action.CALLBACK: "Do the callback",
+            actions.Action.CALLBACK: "Execute a callback",
+            actions.Action.STORE: "Set values in temporary storage",
         }[self.action]
         return action_str.format(*self.arguments)
 

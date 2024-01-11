@@ -12,7 +12,7 @@ ENV PATH=$VENV/bin:$PATH
 COPY pyproject.toml poetry.lock .
 RUN poetry install --without=dev --no-root
 COPY . .
-RUN pip install --no-deps .
+RUN poetry build && pip install --no-deps dist/*.whl
 
 FROM ghcr.io/binkhq/python:3.11
 

@@ -1,16 +1,7 @@
-FROM ghcr.io/binkhq/python:3.11-poetry as build
-
-WORKDIR /src
-ADD . .
-
-RUN poetry build
-
 FROM ghcr.io/binkhq/python:3.11
-
+ARG APP_VERSION
 WORKDIR /app
-COPY --from=build /src/dist/*.whl .
-COPY --from=build /src/wsgi.py .
-RUN pip install *.whl && rm *.whl
+RUN pip install --no-cache api-reflector==$(echo ${APP_VERSION} | cut -c 2-)
 
 ENTRYPOINT [ "gunicorn" ]
-CMD [ "--error-logfile=-", "--access-logfile=-", "--bind=0.0.0.0:6502", "wsgi" ]
+CMD [ "--error-logfile=-", "--access-logfile=-", "--bind=0.0.0.0:6502", "api_reflector.api:create_app" ]
